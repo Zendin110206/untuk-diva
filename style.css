@@ -165,8 +165,18 @@ section{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction
 .h-date{font-family:'Noto Serif JP',serif;font-size:10px;letter-spacing:.4em;color:var(--sakura-dim);opacity:.6;margin-top:2.5rem;display:block;animation:fu 1.8s ease 1.5s both;}
 @keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-.scroll-ind{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;animation:fu 1.8s ease 2.2s both;}
-.scroll-ind span{font-size:9px;letter-spacing:.4em;color:var(--text-dim);}
+.scroll-ind{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;animation:fu-center 1.8s ease 2.2s both;}
+@keyframes fu-center {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0); /* Mengunci posisinya agar tetap di tengah */
+  }
+}
+.scroll-ind span{font-size:9px;letter-spacing:.4em;color:var(--text-dim);margin-right: -.4em;}
 .scroll-line{width:1px;height:50px;background:linear-gradient(to bottom,var(--sakura-dim),transparent);animation:sp 2.2s ease-in-out infinite;}
 @keyframes sp{0%,100%{opacity:.25;height:35px}50%{opacity:1;height:55px}}
 
@@ -1252,4 +1262,24 @@ section{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction
   #chapnav { display: none; }
   .city-pair{flex-direction:column;align-items:flex-start;gap:12px;}
   .d-line{width:100%;margin:.2rem 0 0;}
+
+  /* FIX UKURAN NOTIFIKASI DI HP */
+  #notif-box {
+    width: 92%;
+    padding: 30px 24px 24px;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  .notif-title {
+    margin-bottom: 16px;
+  }
+  .notif-body {
+    font-size: 13.5px;
+    margin-bottom: 20px;
+    line-height: 1.9;
+  }
+  .notif-device {
+    padding: 10px 14px;
+    margin-bottom: 20px;
+  }
 }

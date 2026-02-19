@@ -19,7 +19,10 @@ const welcomeKey = 'diva_welcome_seen_v7';
 
 function closeNotif() {
   if (!notifOverlay) return;
-  try { localStorage.setItem(welcomeKey, '1'); } catch {}
+  try { localStorage.setItem(welcomeKey, '1'); } catch { }
+  
+  unlockBgmPlayback();
+  
   notifOverlay.classList.add('closing');
   setTimeout(() => {
     notifOverlay.remove();
