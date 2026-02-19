@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5 cm per detik</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #06060f;
+    --deep: #0d0d1f;
+    --twilight: #141428;
+    --sakura: #ffb7c5;
+    --sakura-deep: #e8829a;
+    --sakura-pale: #ffe4ec;
+    --star: #f8f4e8;
+    --moon: #ffefc0;
+    --platform: #1a1a2e;
+    --text: #e8e0d5;
+    --text-soft: #a89f97;
+    --amber: #f4a05a;
+    --blue-soft: #8ba3c7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--night);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--sakura);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease;
+    mix-blend-mode: screen;
+  }
+  .cursor-trail {
+    width: 24px; height: 24px;
+    border: 1px solid rgba(255,183,197,0.4);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+  }
+
+  /* ── CANVAS ── */
+  #starCanvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .hero-scene {
+    width: 100%; height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Moon */
+  .moon {
+    position: absolute;
+    top: 12%; right: 18%;
+    width: 80px; height: 80px;
+    background: radial-gradient(circle at 35% 35%, #fff8e0, #ffefc0 60%, #f4d98a);
+    border-radius: 50%;
+    box-shadow: 0 0 40px 15px rgba(255,239,192,0.15), 0 0 80px 30px rgba(255,239,192,0.06);
+    animation: moonFloat 8s ease-in-out infinite;
+  }
+  @keyframes moonFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  /* Station silhouette */
+  .station-wrap {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 45vh;
+    overflow: hidden;
+  }
+
+  .station-platform {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, #0e0e1e, #080810);
+  }
+
+  .station-roof {
+    position: absolute;
+    bottom: 115px; left: 50%;
+    transform: translateX(-50%);
+    width: 320px; height: 40px;
+    background: #0c0c1a;
+    border-top: 3px solid #1a1a30;
+  }
+  .station-roof::before {
+    content: '';
+    position: absolute;
+    top: -18px; left: -20px; right: -20px;
+    height: 20px;
+    background: #0a0a18;
+    clip-path: polygon(0 100%, 5% 0, 95% 0, 100% 100%);
+  }
+
+  .station-pillar {
+    position: absolute;
+    bottom: 115px;
+    width: 12px;
+    height: 90px;
+    background: linear-gradient(to right, #0a0a18, #141428, #0a0a18);
+  }
+  .pillar-l { left: calc(50% - 140px); }
+  .pillar-r { right: calc(50% - 140px); }
+
+  /* Hanging lights */
+  .lantern {
+    position: absolute;
+    bottom: 150px;
+    width: 6px; height: 20px;
+    background: linear-gradient(to bottom, #1a1a30 40%, var(--amber) 40%);
+    animation: lanternSway 4s ease-in-out infinite;
+  }
+  .lantern::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 12px 6px rgba(244,160,90,0.6), 0 0 25px 10px rgba(244,160,90,0.2);
+  }
+  .lantern-1 { left: calc(50% - 100px); animation-delay: 0s; }
+  .lantern-2 { left: calc(50%); animation-delay: 1.2s; }
+  .lantern-3 { left: calc(50% + 100px); animation-delay: 0.6s; }
+  @keyframes lanternSway {
+    0%,100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+
+  /* Train tracks */
+  .tracks {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 30px;
+    overflow: hidden;
+  }
+  .rail {
+    position: absolute;
+    bottom: 10px;
+    height: 4px;
+    width: 100%;
+    background: linear-gradient(to right, transparent, #1e1e35 20%, #1e1e35 80%, transparent);
+  }
+  .rail-l { bottom: 16px; }
+  .rail-r { bottom: 6px; }
+  .sleeper {
+    position: absolute;
+    bottom: 4px;
+    width: 20px; height: 16px;
+    background: #0f0f1e;
+    border-top: 2px solid #1a1a2e;
+    animation: sleeperScroll 1.5s linear infinite;
+  }
+  @keyframes sleeperScroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-80px); }
+  }
+
+  /* Train passing */
+  .train {
+    position: absolute;
+    bottom: 18px;
+    left: -400px;
+    height: 55px;
+    display: flex;
+    animation: trainPass 12s linear infinite;
+    animation-delay: 3s;
+  }
+  @keyframes trainPass {
+    0% { left: -450px; }
+    100% { left: 110%; }
+  }
+  .train-car {
+    width: 120px; height: 50px;
+    background: linear-gradient(to bottom, #1a1a32 0%, #141428 40%, #0d0d1e 100%);
+    border: 1px solid #2a2a48;
+    border-radius: 3px 3px 0 0;
+    position: relative;
+    margin-right: 4px;
+  }
+  .train-car::before {
+    content: '';
+    position: absolute;
+    top: 8px; left: 8px; right: 8px;
+    height: 24px;
+    background: rgba(255,239,192,0.05);
+    border: 1px solid rgba(255,239,192,0.08);
+    border-radius: 2px;
+  }
+  .train-window {
+    position: absolute;
+    top: 10px;
+    width: 28px; height: 18px;
+    background: rgba(244,160,90,0.12);
+    border: 1px solid rgba(244,160,90,0.2);
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(244,160,90,0.15);
+  }
+  .tw-1 { left: 12px; }
+  .tw-2 { left: 50px; }
+  .tw-3 { left: 88px; }
+  .train-engine {
+    width: 130px; height: 55px;
+    background: linear-gradient(135deg, #1c1c34, #141428);
+    border: 1px solid #2a2a48;
+    border-radius: 8px 3px 0 0;
+    position: relative;
+  }
+  .train-engine::after {
+    content: '';
+    position: absolute;
+    top: 50%; right: -8px;
+    width: 14px; height: 14px;
+    background: rgba(255,239,192,0.15);
+    border-radius: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 0 20px 8px rgba(255,239,192,0.1);
+    animation: headlight 0.1s ease-in-out infinite alternate;
+  }
+  @keyframes headlight { from { opacity: 0.8; } to { opacity: 1; } }
+
+  /* Hero text */
+  .hero-text {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    margin-bottom: 18vh;
+  }
+
+  .hero-jp {
+    font-family: 'Shippori Mincho', serif;
+    font-size: clamp(11px, 1.5vw, 14px);
+    letter-spacing: 0.4em;
+    color: var(--sakura-deep);
+    opacity: 0.7;
+    margin-bottom: 1.2rem;
+    display: block;
+    animation: fadeUp 1.5s ease 0.5s both;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(40px, 8vw, 90px);
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    line-height: 1.05;
+    color: var(--text);
+    animation: fadeUp 1.5s ease 0.8s both;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--sakura);
+    display: block;
+  }
+  .hero-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(13px, 1.8vw, 17px);
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    color: var(--text-soft);
+    margin-top: 1.5rem;
+    animation: fadeUp 1.5s ease 1.1s both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* scroll indicator */
+  .scroll-hint {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    animation: fadeUp 1.5s ease 2s both;
+    z-index: 2;
+  }
+  .scroll-hint span {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-soft);
+    font-family: 'Noto Serif JP', serif;
+  }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--sakura-deep), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%,100% { opacity: 0.3; height: 30px; }
+    50% { opacity: 1; height: 50px; }
+  }
+
+  /* ── DIVIDER ── */
+  .jp-divider {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 11px;
+    letter-spacing: 0.5em;
+    color: var(--sakura-deep);
+    opacity: 0.5;
+    margin: 0 0 3rem;
+    text-align: center;
+  }
+
+  /* ── SECTION: DISTANCE ── */
+  #distance {
+    background: linear-gradient(to bottom, var(--night), var(--deep));
+  }
+
+  .distance-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 400;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    transition: all 1s ease;
+  }
+  .distance-sub {
+    font-size: clamp(12px, 1.5vw, 15px);
+    color: var(--text-soft);
+    letter-spacing: 0.2em;
+    text-align: center;
+    margin-bottom: 4rem;
+    font-style: italic;
+    opacity: 0;
+    transition: all 1s ease 0.2s;
+  }
+
+  .map-container {
+    width: min(700px, 90vw);
+    position: relative;
+    opacity: 0;
+    transition: all 1.2s ease 0.4s;
+  }
+
+  .city-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .city-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .city-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--sakura);
+    box-shadow: 0 0 20px 8px rgba(255,183,197,0.3);
+    position: relative;
+    animation: cityPulse 3s ease-in-out infinite;
+  }
+  .city-dot.blue {
+    background: var(--blue-soft);
+    box-shadow: 0 0 20px 8px rgba(139,163,199,0.3);
+  }
+  .city-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    opacity: 0.3;
+    animation: ripple 3s ease-in-out infinite;
+  }
+  @keyframes cityPulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+  @keyframes ripple {
+    0% { transform: translate(-50%,-50%) scale(1); opacity: 0.4; }
+    100% { transform: translate(-50%,-50%) scale(2.5); opacity: 0; }
+  }
+
+  .city-label {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 14px;
+    color: var(--text);
+    letter-spacing: 0.2em;
+    text-align: center;
+  }
+  .city-sublabel {
+    font-size: 11px;
+    color: var(--text-soft);
+    letter-spacing: 0.15em;
+    font-style: italic;
+  }
+
+  .distance-line {
+    flex: 1;
+    position: relative;
+    height: 2px;
+    background: linear-gradient(to right, rgba(255,183,197,0.3), rgba(139,163,199,0.3));
+    overflow: visible;
+  }
+  .distance-line::before {
+    content: attr(data-km);
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--text-soft);
+    white-space: nowrap;
+  }
+  .train-dot {
+    width: 12px; height: 8px;
+    background: var(--amber);
+    border-radius: 2px;
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    box-shadow: 0 0 10px 4px rgba(244,160,90,0.5);
+    animation: trainMove 8s ease-in-out infinite;
+  }
+  @keyframes trainMove {
+    0% { left: 0%; }
+    45% { left: calc(100% - 12px); }
+    55% { left: calc(100% - 12px); }
+    100% { left: 0%; }
+  }
+
+  .days-counter {
+    margin-top: 4rem;
+    text-align: center;
+    opacity: 0;
+    transition: all 1s ease 0.8s;
+  }
+  .days-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(60px, 10vw, 110px);
+    font-weight: 300;
+    color: var(--sakura-pale);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .days-label {
+    font-size: 12px;
+    letter-spacing: 0.4em;
+    color: var(--text-soft);
+    margin-top: 0.5rem;
+    font-family: 'Noto Serif JP', serif;
+  }
+
+  /* ── SECTION: TIMELINE ── */
+  #timeline {
+    background: linear-gradient(to bottom, var(--deep), var(--twilight));
+    padding: 6rem 2rem;
+  }
+
+  .timeline-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: clamp(24px, 3.5vw, 42px);
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 5rem;
+    opacity: 0;
+    transition: all 1s ease;
+  }
+
+  .timeline-wrap {
+    width: min(700px, 90vw);
+    position: relative;
+  }
+
+  .timeline-axis {
+    position: absolute;
+    left: 50%;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(255,183,197,0.2) 10%, rgba(255,183,197,0.2) 90%, transparent);
+    transform: translateX(-50%);
+  }
+
+  .tl-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 4rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease;
+  }
+  .tl-item.left { flex-direction: row-reverse; text-align: right; }
+  .tl-item.right { flex-direction: row; text-align: left; }
+
+  .tl-dot-wrap {
+    flex-shrink: 0;
+    width: 16px; height: 16px;
+    position: relative;
+    margin-top: 4px;
+  }
+  .tl-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--sakura-deep);
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+  }
+  .tl-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,183,197,0.3);
+  }
+
+  .tl-content { flex: 1; }
+
+  .tl-date {
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    color: var(--sakura-deep);
+    font-family: 'Noto Serif JP', serif;
+    margin-bottom: 0.4rem;
+    opacity: 0.8;
+  }
+  .tl-heading {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 18px;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+  }
+  .tl-body {
+    font-size: clamp(13px, 1.5vw, 15px);
+    color: var(--text-soft);
+    line-height: 1.8;
+    font-style: italic;
+  }
+
+  /* ── SECTION: LETTER ── */
+  #letter {
+    background: linear-gradient(to bottom, var(--twilight), #0a0818);
+    padding: 6rem 2rem;
+  }
+
+  .letter-container {
+    width: min(600px, 88vw);
+    position: relative;
+    padding: 3rem;
+    border: 1px solid rgba(255,183,197,0.1);
+    background: rgba(255,255,255,0.02);
+    opacity: 0;
+    transition: all 1.2s ease;
+  }
+  .letter-container::before {
+    content: '手紙';
+    position: absolute;
+    top: -1rem; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Shippori Mincho', serif;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    color: var(--sakura-deep);
+    background: #0a0818;
+    padding: 0 1rem;
+  }
+
+  .letter-salutation {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--sakura-pale);
+    margin-bottom: 2rem;
+  }
+  .letter-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(15px, 1.8vw, 18px);
+    font-weight: 300;
+    line-height: 2;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+  .letter-body em {
+    color: var(--sakura-pale);
+    font-style: italic;
+  }
+  .letter-sig {
+    text-align: right;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-style: italic;
+    color: var(--text-soft);
+    margin-top: 2rem;
+  }
+
+  /* Typewriter */
+  .typewriter-wrap {
+    position: relative;
+    overflow: hidden;
+  }
+  .typewriter-text {
+    opacity: 0;
+  }
+
+  /* ── SECTION: INTERACTIVE STARS ── */
+  #starfield {
+    background: linear-gradient(to bottom, #0a0818, var(--night));
+    padding: 6rem 2rem;
+    overflow: hidden;
+  }
+
+  .star-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: clamp(22px, 3.5vw, 40px);
+    text-align: center;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    transition: all 1s ease;
+  }
+  .star-subtitle {
+    font-size: 13px;
+    color: var(--text-soft);
+    text-align: center;
+    letter-spacing: 0.2em;
+    margin-bottom: 3rem;
+    font-style: italic;
+    opacity: 0;
+    transition: all 1s ease 0.3s;
+  }
+
+  #starCanvas2 {
+    width: min(700px, 90vw);
+    height: 400px;
+    border: 1px solid rgba(255,183,197,0.08);
+    cursor: crosshair !important;
+    position: relative;
+    opacity: 0;
+    transition: all 1s ease 0.5s;
+    display: block;
+  }
+
+  .star-hint {
+    margin-top: 1rem;
+    font-size: 11px;
+    color: var(--text-soft);
+    letter-spacing: 0.25em;
+    text-align: center;
+    opacity: 0;
+    transition: all 1s ease 0.7s;
+  }
+
+  /* ── SECTION: ENDING ── */
+  #ending {
+    min-height: 100vh;
+    background: var(--night);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ending-text {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  .ending-jp {
+    font-family: 'Shippori Mincho', serif;
+    font-size: clamp(12px, 2vw, 16px);
+    letter-spacing: 0.6em;
+    color: var(--sakura-deep);
+    display: block;
+    margin-bottom: 2rem;
+    opacity: 0;
+    transition: all 1s ease;
+  }
+  .ending-main {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 5vw, 62px);
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.3;
+    color: var(--text);
+    opacity: 0;
+    transition: all 1.2s ease 0.4s;
+  }
+  .ending-main span {
+    color: var(--sakura-pale);
+  }
+  .ending-final {
+    margin-top: 3rem;
+    font-size: clamp(12px, 1.5vw, 15px);
+    letter-spacing: 0.3em;
+    color: var(--text-soft);
+    font-style: italic;
+    opacity: 0;
+    transition: all 1s ease 1s;
+  }
+
+  .sakura-floor {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 80px;
+    background: linear-gradient(to top, rgba(255,183,197,0.05), transparent);
+  }
+
+  /* Visible class for intersection observer */
+  .visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+
+  /* Sakura petals */
+  .petal {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    width: 8px; height: 8px;
+    background: radial-gradient(ellipse at 30% 30%, rgba(255,220,230,0.9), rgba(255,183,197,0.6));
+    border-radius: 0 60% 0 60%;
+    animation: petalFall linear infinite;
+    will-change: transform;
+  }
+  @keyframes petalFall {
+    0% { transform: translateY(-20px) rotate(0deg) scale(1); opacity: 0; }
+    5% { opacity: 0.8; }
+    90% { opacity: 0.4; }
+    100% { transform: translateY(110vh) rotate(720deg) scale(0.6); opacity: 0; }
+  }
+
+  /* Sleeper repeating pattern */
+  .sleepers-wrap {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 30px;
+    overflow: hidden;
+    display: flex;
+    gap: 60px;
+    animation: sleeperScroll 2s linear infinite;
+  }
+
+  @media (max-width: 600px) {
+    .city-row { gap: 0.5rem; }
+    .tl-item.left, .tl-item.right { flex-direction: column; text-align: left; }
+    .timeline-axis { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<!-- Background star canvas -->
+<canvas id="starCanvas"></canvas>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-scene">
+    <div class="moon"></div>
+
+    <div class="hero-text">
+      <span class="hero-jp">秒速5センチメートル ・ 5 cm per detik</span>
+      <h1 class="hero-title">
+        jarak memang<br>
+        <em>memisahkan,</em>
+      </h1>
+      <p class="hero-sub">tapi bunga sakura tetap jatuh, di tempat yang sama</p>
+    </div>
+
+    <!-- Station scene -->
+    <div class="station-wrap">
+      <div class="station-roof"></div>
+      <div class="station-pillar pillar-l"></div>
+      <div class="station-pillar pillar-r"></div>
+      <div class="lantern lantern-1"></div>
+      <div class="lantern lantern-2"></div>
+      <div class="lantern lantern-3"></div>
+
+      <div class="train">
+        <div class="train-engine"></div>
+        <div class="train-car">
+          <div class="train-window tw-1"></div>
+          <div class="train-window tw-2"></div>
+          <div class="train-window tw-3"></div>
+        </div>
+        <div class="train-car">
+          <div class="train-window tw-1"></div>
+          <div class="train-window tw-2"></div>
+          <div class="train-window tw-3"></div>
+        </div>
+        <div class="train-car">
+          <div class="train-window tw-1"></div>
+          <div class="train-window tw-2"></div>
+        </div>
+      </div>
+
+      <div class="station-platform"></div>
+
+      <div class="tracks">
+        <div class="rail rail-l"></div>
+        <div class="rail rail-r"></div>
+        <div class="sleepers-wrap" id="sleepersWrap"></div>
+      </div>
+    </div>
+
+    <div class="scroll-hint">
+      <span>scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DISTANCE ── -->
+<section id="distance">
+  <p class="jp-divider">距離 · jarak</p>
+  <h2 class="distance-title" id="dt">Dua kota, satu hati</h2>
+  <p class="distance-sub" id="ds">yang selalu mencari jalan pulang</p>
+
+  <div class="map-container" id="mc">
+    <div class="city-row">
+      <div class="city-node">
+        <div class="city-dot"></div>
+        <div class="city-label">Pasuruan</div>
+        <div class="city-sublabel">rumah · pulang</div>
+      </div>
+
+      <div class="distance-line" data-km="≈ 70 km">
+        <div class="train-dot" id="trainDot1"></div>
+      </div>
+
+      <div class="city-node">
+        <div class="city-dot blue"></div>
+        <div class="city-label">Surabaya</div>
+        <div class="city-sublabel">dia · menunggu</div>
+      </div>
+    </div>
+
+    <br><br>
+
+    <div class="city-row">
+      <div class="city-node">
+        <div class="city-dot"></div>
+        <div class="city-label">Pasuruan</div>
+        <div class="city-sublabel">awal segalanya</div>
+      </div>
+
+      <div class="distance-line" data-km="≈ 770 km">
+        <div class="train-dot" id="trainDot2" style="animation-duration: 12s; animation-delay: 4s;"></div>
+      </div>
+
+      <div class="city-node">
+        <div class="city-dot blue"></div>
+        <div class="city-label">Bandung</div>
+        <div class="city-sublabel">aku · menunggu</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="days-counter" id="dc">
+    <div class="days-number" id="daysNum">—</div>
+    <div class="days-label">hari sejak pertama kali hati ini bergetar</div>
+  </div>
+</section>
+
+<!-- ── TIMELINE ── -->
+<section id="timeline">
+  <p class="jp-divider">記憶 · kenangan</p>
+  <h2 class="timeline-title" id="tt">Semua yang tak terlupakan</h2>
+
+  <div class="timeline-wrap">
+    <div class="timeline-axis"></div>
+
+    <div class="tl-item right" id="tl1">
+      <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+      <div class="tl-content">
+        <div class="tl-date">SMA · kelas akselerasi</div>
+        <div class="tl-heading">Perpustakaan itu</div>
+        <div class="tl-body">Dari sekian banyak tempat di dunia, dia memilih duduk di sebelahku. Seblak di pertigaan jalan, coklat Dairy Milk di malam yang sunyi — hal-hal kecil yang ternyata mengubah segalanya.</div>
+      </div>
+    </div>
+
+    <div class="tl-item left" id="tl2">
+      <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+      <div class="tl-content">
+        <div class="tl-date">Semester 3 - 4 · kuliah</div>
+        <div class="tl-heading">Malam-malam panjang</div>
+        <div class="tl-body">Sleep call hingga 7 jam. Suara satu sama lain menemani malam. Dua kota, tapi rasanya seperti berada di ruangan yang sama.</div>
+      </div>
+    </div>
+
+    <div class="tl-item right" id="tl3">
+      <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+      <div class="tl-content">
+        <div class="tl-date">Semester 5</div>
+        <div class="tl-heading">5 cm per detik</div>
+        <div class="tl-body">Nonton anime bersama. Lagu "One More Time, One More Chance" — 50.000 menit mendengarkan. Bukan kebetulan, rasanya seperti cermin dari cerita kita sendiri.</div>
+      </div>
+    </div>
+
+    <div class="tl-item left" id="tl4">
+      <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+      <div class="tl-content">
+        <div class="tl-date">11 Februari 2026 · dini hari</div>
+        <div class="tl-heading">Mini book itu</div>
+        <div class="tl-body">Di tengah hujan petir Surabaya dan ketika semua teman tidak membalas, dia membuka chat ini. Dan pagi harinya, sebuah flip book kecil hadir — "I hope this brings a small smile to you."</div>
+      </div>
+    </div>
+
+    <div class="tl-item right" id="tl5">
+      <div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--amber)"></div></div>
+      <div class="tl-content">
+        <div class="tl-date">besok · stasiun gubeng</div>
+        <div class="tl-heading">Akhirnya, bertemu</div>
+        <div class="tl-body">Hampir 4 tahun tanpa tatap muka. Sebuah pertemuan di stasiun, mungkin singkat — tapi nyata. Untuk pertama kalinya, tidak hanya suara atau teks.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── LETTER ── -->
+<section id="letter">
+  <p class="jp-divider">手紙 · surat</p>
+
+  <div class="letter-container" id="lc">
+    <div class="letter-salutation">Untuk Diva,</div>
+
+    <p class="letter-body">
+      Aku tidak pandai merangkai kata. Tapi kamu yang mengajarkan aku bahwa diam pun bisa berbicara, bahwa hadir pun sudah cukup menjadi bukti.
+    </p>
+    <p class="letter-body">
+      Kamu bilang perasaanmu tidak bisa hilang begitu saja — aku mau kamu tahu, aku juga tidak pernah benar-benar pergi. Hanya <em>bingung</em>, hanya <em>takut</em>, hanya terlalu sering salah langkah.
+    </p>
+    <p class="letter-body">
+      Setiap kali melihat gambar stasiun di laptopku, setiap kali mendengar "One More Time, One More Chance" — semua mengarah ke kamu. Selalu.
+    </p>
+    <p class="letter-body">
+      Aku tidak tahu apa yang ada di depan kita. Tapi aku tahu satu hal: <em>aku ingin meluangkan waktu yang selama ini tidak pernah aku luangkan</em>.
+    </p>
+    <p class="letter-body">
+      Besok, di stasiun itu — itu bukan akhir. Itu baru permulaan dari sesuatu yang lebih jelas.
+    </p>
+
+    <div class="letter-sig">
+      — Nal, yang masih di sini
+    </div>
+  </div>
+</section>
+
+<!-- ── INTERACTIVE STARS ── -->
+<section id="starfield">
+  <p class="jp-divider">星座 · rasi bintang kita</p>
+  <h2 class="star-title" id="stTitle">Buat rasi bintangmu sendiri</h2>
+  <p class="star-subtitle" id="stSub">klik untuk menaruh bintang · sambungkan titik-titik dalam hatimu</p>
+
+  <canvas id="starCanvas2" width="700" height="400"></canvas>
+  <p class="star-hint" id="stHint">klik: tambah bintang &nbsp;·&nbsp; klik 2 bintang: hubungkan &nbsp;·&nbsp; klik kanan: hapus semua</p>
+</section>
+
+<!-- ── ENDING ── -->
+<section id="ending">
+  <div class="ending-text">
+    <span class="ending-jp" id="ej">また会える日まで</span>
+    <div class="ending-main" id="em">
+      "to be able<br>to <span>see you</span> again"
+    </div>
+    <p class="ending-final" id="ef">5 cm per detik — kecepatan jatuhnya bunga sakura,<br>dan kecepatan dua hati yang bergerak saling mendekati.</p>
+  </div>
+  <div class="sakura-floor"></div>
+</section>
+
+<script>
+// ── CUSTOM CURSOR ──
+const cursor = document.getElementById('cursor');
+const trail = document.getElementById('cursorTrail');
+let mx = 0, my = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+  setTimeout(() => {
+    trail.style.left = mx + 'px';
+    trail.style.top = my + 'px';
+  }, 80);
+});
+
+// ── STAR BACKGROUND CANVAS ──
+const sc = document.getElementById('starCanvas');
+const sctx = sc.getContext('2d');
+let W, H;
+const stars = [];
+
+function resize() {
+  W = sc.width = window.innerWidth;
+  H = sc.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+for (let i = 0; i < 200; i++) {
+  stars.push({
+    x: Math.random() * 2000,
+    y: Math.random() * 1000,
+    r: Math.random() * 1.2 + 0.2,
+    a: Math.random(),
+    speed: Math.random() * 0.008 + 0.002,
+    phase: Math.random() * Math.PI * 2
+  });
+}
+
+function drawStars() {
+  sctx.clearRect(0, 0, W, H);
+  const t = Date.now() * 0.001;
+  stars.forEach(s => {
+    const alpha = s.a * (0.5 + 0.5 * Math.sin(t * s.speed * 30 + s.phase));
+    sctx.beginPath();
+    sctx.arc(s.x % W, s.y % H, s.r, 0, Math.PI * 2);
+    sctx.fillStyle = `rgba(248, 244, 232, ${alpha})`;
+    sctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+drawStars();
+
+// ── SAKURA PETALS ──
+function createPetal() {
+  const p = document.createElement('div');
+  p.classList.add('petal');
+  const size = Math.random() * 8 + 5;
+  const dur = Math.random() * 8 + 6;
+  const delay = Math.random() * 4;
+  const left = Math.random() * 110 - 5;
+  p.style.cssText = `
+    left: ${left}vw;
+    width: ${size}px; height: ${size}px;
+    animation-duration: ${dur}s;
+    animation-delay: ${delay}s;
+    opacity: 0;
+    transform-origin: center;
+  `;
+  document.body.appendChild(p);
+  setTimeout(() => p.remove(), (dur + delay) * 1000 + 500);
+}
+setInterval(createPetal, 600);
+for (let i = 0; i < 12; i++) createPetal();
+
+// ── SLEEPERS ──
+const sw = document.getElementById('sleepersWrap');
+for (let i = 0; i < 30; i++) {
+  const s = document.createElement('div');
+  s.classList.add('sleeper');
+  s.style.left = (i * 80) + 'px';
+  sw.appendChild(s);
+}
+
+// ── DAYS COUNTER ──
+// Assume feelings started around when they went to library in SMA
+// Let's say SMA = approx 2022 (3 years ago from 2025)
+// Use a rough date
+const startDate = new Date('2022-08-01');
+const today = new Date();
+const days = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+const daysEl = document.getElementById('daysNum');
+
+function animateCount(target, el, duration = 2000) {
+  let start = 0;
+  const step = target / (duration / 16);
+  const timer = setInterval(() => {
+    start += step;
+    if (start >= target) { el.textContent = target.toLocaleString(); clearInterval(timer); return; }
+    el.textContent = Math.floor(start).toLocaleString();
+  }, 16);
+}
+
+// ── INTERSECTION OBSERVER ──
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      // Special case: days counter
+      if (e.target.id === 'dc') {
+        setTimeout(() => animateCount(days, daysEl, 1800), 400);
+      }
+    }
+  });
+}, { threshold: 0.15 });
+
+['dt','ds','mc','dc','tt','lc','stTitle','stSub','starCanvas2','stHint','ej','em','ef']
+  .forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el); });
+
+['tl1','tl2','tl3','tl4','tl5'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) obs.observe(el);
+});
+
+// ── INTERACTIVE STAR CANVAS ──
+const sc2 = document.getElementById('starCanvas2');
+const ctx2 = sc2.getContext('2d');
+const userStars = [];
+let selectedStar = null;
+let connections = [];
+
+// Background stars for the canvas
+const bgStars2 = [];
+for (let i = 0; i < 80; i++) {
+  bgStars2.push({
+    x: Math.random() * 700,
+    y: Math.random() * 400,
+    r: Math.random() * 0.8 + 0.2,
+    alpha: Math.random() * 0.4 + 0.1,
+    phase: Math.random() * Math.PI * 2
+  });
+}
+
+function drawStarCanvas() {
+  const t = Date.now() * 0.001;
+  ctx2.clearRect(0, 0, 700, 400);
+
+  // dark bg
+  ctx2.fillStyle = '#06060f';
+  ctx2.fillRect(0, 0, 700, 400);
+
+  // bg stars
+  bgStars2.forEach(s => {
+    const a = s.alpha * (0.6 + 0.4 * Math.sin(t * 0.8 + s.phase));
+    ctx2.beginPath();
+    ctx2.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx2.fillStyle = `rgba(248,244,232,${a})`;
+    ctx2.fill();
+  });
+
+  // connections
+  connections.forEach(([i, j]) => {
+    const a = userStars[i], b = userStars[j];
+    if (!a || !b) return;
+    ctx2.beginPath();
+    ctx2.moveTo(a.x, a.y);
+    ctx2.lineTo(b.x, b.y);
+    ctx2.strokeStyle = 'rgba(255,183,197,0.25)';
+    ctx2.lineWidth = 0.8;
+    ctx2.stroke();
+  });
+
+  // user stars
+  userStars.forEach((s, i) => {
+    const pulse = 1 + 0.15 * Math.sin(t * 2 + s.phase);
+    const glow = ctx2.createRadialGradient(s.x, s.y, 0, s.x, s.y, 12 * pulse);
+    glow.addColorStop(0, 'rgba(255,220,230,0.8)');
+    glow.addColorStop(0.4, 'rgba(255,183,197,0.3)');
+    glow.addColorStop(1, 'rgba(255,183,197,0)');
+    ctx2.beginPath();
+    ctx2.arc(s.x, s.y, 12 * pulse, 0, Math.PI * 2);
+    ctx2.fillStyle = glow;
+    ctx2.fill();
+
+    ctx2.beginPath();
+    ctx2.arc(s.x, s.y, 2.5, 0, Math.PI * 2);
+    ctx2.fillStyle = i === selectedStar ? '#fff' : '#ffb7c5';
+    ctx2.fill();
+
+    if (i === selectedStar) {
+      ctx2.beginPath();
+      ctx2.arc(s.x, s.y, 6, 0, Math.PI * 2);
+      ctx2.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx2.lineWidth = 1;
+      ctx2.stroke();
+    }
+  });
+
+  requestAnimationFrame(drawStarCanvas);
+}
+drawStarCanvas();
+
+sc2.addEventListener('click', e => {
+  const rect = sc2.getBoundingClientRect();
+  const scaleX = 700 / rect.width;
+  const scaleY = 400 / rect.height;
+  const x = (e.clientX - rect.left) * scaleX;
+  const y = (e.clientY - rect.top) * scaleY;
+
+  // check if clicking existing star
+  const hitIdx = userStars.findIndex(s => Math.hypot(s.x - x, s.y - y) < 16);
+
+  if (hitIdx >= 0) {
+    if (selectedStar === null) {
+      selectedStar = hitIdx;
+    } else if (selectedStar !== hitIdx) {
+      const exists = connections.find(([a,b]) => (a===selectedStar&&b===hitIdx)||(a===hitIdx&&b===selectedStar));
+      if (!exists) connections.push([selectedStar, hitIdx]);
+      selectedStar = null;
+    } else {
+      selectedStar = null;
+    }
+  } else {
+    userStars.push({ x, y, phase: Math.random() * Math.PI * 2 });
+    selectedStar = null;
+  }
+});
+
+sc2.addEventListener('contextmenu', e => {
+  e.preventDefault();
+  userStars.length = 0;
+  connections.length = 0;
+  selectedStar = null;
+});
+
+// ── CURSOR hide on star canvas ──
+sc2.style.cursor = 'crosshair';
+</script>
+</body>
+</html>

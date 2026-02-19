@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5 cm / detik — Gubeng, malam ini</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:#04080f; --mid:#060c1a; --deep:#0a1428;
+    --sakura:#f0a8bc; --sakura-d:rgba(240,168,188,0.38);
+    --sakura-pale:#fce4ef;
+    --gold:#c4a06a; --gold-p:#e4d0a0;
+    --cream:#f0e6d6;
+    --t:rgba(228,216,200,1);
+    --td:rgba(228,216,200,0.45);
+    --tf:rgba(228,216,200,0.18);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--void); color:var(--t);
+    font-family:'Noto Sans JP',sans-serif; font-weight:300;
+    overflow-x:hidden; cursor:none;
+  }
+
+  /* cursor */
+  #c1{width:5px;height:5px;background:var(--sakura);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+  #c2{width:22px;height:22px;border:1px solid rgba(240,168,188,0.22);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .18s ease;}
+
+  /* stars */
+  #stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+  .star{position:absolute;background:#fff;border-radius:50%;animation:twk ease-in-out infinite;}
+  @keyframes twk{0%,100%{opacity:.12;}50%{opacity:.8;}}
+
+  /* petals */
+  #petals{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:hidden;}
+  .petal{
+    position:absolute;top:-20px;border-radius:50% 0 50% 0;opacity:0;
+    background:radial-gradient(ellipse,rgba(240,168,188,.82) 0%,rgba(210,120,140,.45) 70%,transparent 100%);
+    animation:fallP linear infinite;
+  }
+  @keyframes fallP{
+    0%{transform:translateY(-20px) rotate(0deg) translateX(0);opacity:0;}
+    8%{opacity:.75;}90%{opacity:.4;}
+    100%{transform:translateY(110vh) rotate(580deg) translateX(var(--drift));opacity:0;}
+  }
+
+  /* grain */
+  body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:200;opacity:.02;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:180px;}
+
+  /* reveal */
+  .fi{opacity:0;transform:translateY(30px);transition:opacity .9s ease,transform .9s ease;}
+  .fi.on{opacity:1;transform:translateY(0);}
+  .fi.d1{transition-delay:.15s;}.fi.d2{transition-delay:.3s;}.fi.d3{transition-delay:.45s;}
+
+  /* ━━━━━━━━━━━━━━━━━━━━━
+     OPENING
+  ━━━━━━━━━━━━━━━━━━━━━ */
+  #s0{position:relative;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;overflow:hidden;}
+  .ot{position:relative;z-index:10;text-align:center;margin-bottom:26vh;}
+  .ojp{font-family:'Noto Serif JP',serif;font-size:clamp(10px,1.3vw,13px);letter-spacing:.6em;color:var(--sakura);opacity:.65;margin-bottom:18px;animation:up 1.4s ease both;}
+  .oh1{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,9vw,90px);font-weight:300;color:var(--cream);letter-spacing:.08em;line-height:1.05;animation:up 1.4s .25s ease both;}
+  .oh1 em{color:var(--sakura);font-style:italic;}
+  .osub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(12px,1.6vw,16px);letter-spacing:.2em;color:var(--td);margin-top:12px;animation:up 1.4s .5s ease both;}
+  .oloc{font-size:10px;letter-spacing:.5em;color:var(--gold);opacity:.45;margin-top:16px;text-transform:uppercase;animation:up 1.4s .7s ease both;}
+  @keyframes up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+  /* peron */
+  .peron{position:absolute;bottom:0;left:0;width:100%;height:30vh;z-index:4;}
+  .pfloor{position:absolute;bottom:0;left:0;width:100%;height:10vh;background:linear-gradient(to top,#080e1e 0%,#0c1630 60%,transparent 100%);}
+  .pfloor::before{content:'';position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,transparent 5%,rgba(196,160,106,.32) 30%,rgba(196,160,106,.32) 70%,transparent 95%);}
+  .plamp{position:absolute;bottom:9.5vh;z-index:5;display:flex;flex-direction:column;align-items:center;}
+  .plamp:nth-child(1){left:11%}.plamp:nth-child(2){right:11%}
+  .lglow{width:16px;height:16px;background:radial-gradient(circle,rgba(255,235,160,.9),rgba(255,200,60,.28) 60%,transparent);border-radius:50%;box-shadow:0 0 22px 10px rgba(255,220,80,.1);animation:gl 3.5s ease-in-out infinite;}
+  @keyframes gl{0%,100%{opacity:1;}60%{opacity:.72;}}
+  .lpole{width:2px;height:52px;background:rgba(180,155,100,.28);}
+  .pfigure{position:absolute;bottom:9.5vh;left:50%;transform:translateX(-85px);z-index:6;display:flex;flex-direction:column;align-items:center;}
+  .fhead{width:9px;height:9px;background:rgba(190,170,145,.32);border-radius:50%;margin-bottom:2px;}
+  .fbody{width:12px;height:23px;background:rgba(190,170,145,.22);border-radius:1px;}
+  .fshad{width:17px;height:3px;background:rgba(0,0,0,.22);border-radius:50%;filter:blur(2px);margin-top:1px;}
+  .tracks{position:absolute;bottom:8.5vh;left:50%;transform:translateX(-50%) perspective(340px) rotateX(72deg);width:150px;height:480px;z-index:3;}
+  .rail{position:absolute;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--gold-p),transparent 80%);opacity:.28;}
+  .rail:first-child{left:26px}.rail:last-child{right:26px}
+
+  .scue{position:absolute;bottom:13vh;left:50%;transform:translateX(-50%);z-index:10;display:flex;flex-direction:column;align-items:center;gap:8px;animation:up 1.4s 1.4s ease both;}
+  .scue span{font-size:9px;letter-spacing:.5em;color:var(--td);text-transform:uppercase;}
+  .sline{width:1px;height:34px;background:linear-gradient(to bottom,var(--gold),transparent);animation:drip 1.6s ease-in-out infinite;transform-origin:top;}
+  @keyframes drip{0%{transform:scaleY(0);opacity:0;}50%{transform:scaleY(1);opacity:1;}100%{transform:scaleY(1);opacity:0;}}
+
+  /* ━━━━━━━━━━━━━━━━━━━━━
+     JARAK
+  ━━━━━━━━━━━━━━━━━━━━━ */
+  #s1{position:relative;z-index:2;padding:130px 24px 90px;text-align:center;}
+  .slbl{font-size:9px;letter-spacing:.6em;text-transform:uppercase;color:var(--sakura);opacity:.52;margin-bottom:14px;}
+  .jrow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin:18px 0 28px;}
+  .jcity{display:flex;flex-direction:column;align-items:center;gap:5px;padding:0 28px;}
+  .jcname{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(20px,3.5vw,32px);color:var(--cream);font-weight:300;}
+  .jcnote{font-size:9px;letter-spacing:.35em;color:var(--td);text-transform:uppercase;}
+  .jarrow{display:flex;flex-direction:column;align-items:center;gap:5px;}
+  .jnum{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(52px,13vw,115px);font-weight:300;line-height:1;
+    color:transparent;-webkit-text-stroke:1px rgba(240,168,188,.2);
+    transition:-webkit-text-stroke .4s;cursor:default;letter-spacing:-.02em;
+  }
+  .jnum:hover{-webkit-text-stroke:1px rgba(240,168,188,.6);}
+  .junit{font-size:9px;letter-spacing:.5em;color:var(--td);text-transform:uppercase;}
+  .jnote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(13px,1.8vw,16px);color:var(--td);max-width:460px;margin:0 auto;line-height:2.1;}
+  .cntrow{margin-top:34px;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--td);letter-spacing:.15em;}
+  .cntnum{font-size:26px;color:var(--gold-p);font-style:normal;}
+
+  /* ━━━━━━━━━━━━━━━━━━━━━
+     KRONIK
+  ━━━━━━━━━━━━━━━━━━━━━ */
+  #s2{position:relative;z-index:2;padding:60px 20px 100px;max-width:680px;margin:0 auto;}
+  .deco{display:flex;align-items:center;gap:12px;opacity:.16;margin:50px auto;max-width:380px;}
+  .deco::before,.deco::after{content:'';flex:1;height:1px;background:var(--gold);}
+  .deco span{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold);}
+  .krh{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,5vw,44px);font-weight:300;font-style:italic;color:var(--cream);text-align:center;margin-bottom:68px;}
+  .kre{display:grid;grid-template-columns:68px 1px 1fr;gap:0 18px;margin-bottom:52px;opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s ease;}
+  .kre.on{opacity:1;transform:translateY(0);}
+  .krw{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;color:var(--gold);opacity:.8;text-align:right;padding-top:3px;line-height:1.5;letter-spacing:.08em;}
+  .krln{position:relative;background:linear-gradient(to bottom,rgba(196,160,106,.38) 0%,rgba(196,160,106,.04) 100%);}
+  .krln::before{content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);width:6px;height:6px;border:1px solid var(--gold);border-radius:50%;background:var(--void);}
+  .krb{padding-left:12px;}
+  .krtitle{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:var(--sakura-pale);margin-bottom:8px;font-weight:300;}
+  .krtxt{font-size:12.5px;line-height:2.1;color:rgba(228,216,200,.52);letter-spacing:.04em;}
+  .krtag{display:inline-block;margin-top:9px;font-size:9px;letter-spacing:.4em;color:var(--sakura);opacity:.48;text-transform:uppercase;}
+
+  /* ━━━━━━━━━━━━━━━━━━━━━
+     GUBENG / STATION SCENE
+  ━━━━━━━━━━━━━━━━━━━━━ */
+  #s3{position:relative;z-index:2;padding:80px 24px 100px;text-align:center;}
+  .gbox{max-width:600px;margin:0 auto;padding:68px 48px;background:rgba(255,255,255,.012);border:1px solid rgba(240,168,188,.08);position:relative;overflow:hidden;}
+  .gbox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--sakura-d),transparent);}
+  .gbox::after{content:'STASIUN GUBENG · SURABAYA';position:absolute;bottom:16px;right:22px;font-size:8px;letter-spacing:.5em;color:var(--tf);text-transform:uppercase;}
+  .gtime{font-family:'Cormorant Garamond',serif;font-size:clamp(50px,11vw,100px);color:transparent;font-weight:300;line-height:1;-webkit-text-stroke:1px rgba(240,168,188,.16);margin-bottom:18px;}
+  .groute{font-size:9px;letter-spacing:.6em;color:var(--gold);opacity:.55;text-transform:uppercase;margin-bottom:30px;}
+  .gprosa{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(15px,2.4vw,21px);font-weight:300;color:var(--t);line-height:1.95;max-width:480px;margin:0 auto;}
+  .gprosa em{color:var(--sakura);font-style:normal;}
+  .trainline{width:100%;height:2px;position:relative;overflow:hidden;margin:48px 0 0;background:transparent;}
+  .trainline::after{content:'';position:absolute;left:-30%;top:0;height:100%;width:30%;background:linear-gradient(90deg,transparent,rgba(196,160,106,.45),rgba(255,248,170,.65),rgba(196,160,106,.45),transparent);animation:tgo 5s ease-in-out infinite;}
+  @keyframes tgo{0%{left:-30%}100%{left:130%}}
+  .gcinema{margin:48px auto 0;max-width:520px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--td);line-height:2.1;text-align:center;}
+
+  /* ━━━━━━━━━━━━━━━━━━━━━
+     FILM & LAGU
+  ━━━━━━━━━━━━━━━━━━━━━ */
+  #s4{position:relative;z-index:2;padding:100px 24px 90px;text-align:center;}
+  .fradial{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:560px;height:360px;background:radial-gradient(ellipse,rgba(240,168,188,.03) 0%,transparent 70%);pointer-events:none;}
+  .fquote{font-family:'Cormorant Garamond',serif;font-size:clamp(17px,3.2vw,32px);font-weight:300;font-style:italic;color:var(--cream);max-width:700px;margin:0 auto;line-height:1.9;position:relative;z-index:2;}
+  .qm{font-size:4em;line-height:0;vertical-align:-.32em;color:var(--sakura);opacity:.2;font-family:'Cormorant Garamond',serif;}
+  .fattr{margin-top:26px;font-size:9px;letter-spacing:.5em;color:var(--td);text-transform:uppercase;}
+  .sbox{margin:56px auto 0;max-width:400px;padding:22px 30px;border:1px solid rgba(196,160,106,.1);background:rgba(255,255,255,.012);position:relative;z-index:2;}
+  .stitle{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--gold-p);margin-bottom:5px;}
+  .sdetail{font-size:9px;letter-spacing:.3em;color:var(--td);margin-bottom:14px;}
+  .sbar{height:2px;background:rgba(255,255,255,.05);position:relative;overflow:hidden;}
+  .sbfill{height:100%;width:0%;background:linear-gradient(90deg,var(--sakura-d),var(--sakura));animation:sp 8s ease-in-out infinite;}
+  @keyframes sp{0%{width:0%}45%{width:100%}55%{width:100%}100%{width:0%}}
+  .stime{display:flex;justify-content:space-between;font-size:9px;letter-spacing:.2em;color:var(--tf);margin-top:5px;}
+  .slyr{font-size:11px;letter-spacing:.08em;color:var(--td);margin-top:10px;font-style:italic;font-family:'Cormorant Garamond',serif;line-height:1.8;}
+
+  /* ━━━━━━━━━━━━━━━━━━━━━
+     SURAT
+  ━━━━━━━━━━━━━━━━━━━━━ */
+  #s5{position:relative;z-index:2;padding:80px 20px 100px;display:flex;flex-direction:column;align-items:center;}
+  .swrap{width:100%;max-width:580px;background:rgba(255,255,255,.012);border:1px solid rgba(240,168,188,.08);padding:58px 46px 48px;position:relative;}
+  .swrap::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(240,168,188,.28),transparent);}
+  .slabel{font-size:9px;letter-spacing:.6em;text-transform:uppercase;color:var(--sakura);opacity:.42;margin-bottom:26px;}
+  .skepada{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:26px;color:var(--sakura-pale);margin-bottom:26px;font-weight:300;}
+  .sbody{font-family:'EB Garamond',serif;font-size:15.5px;line-height:2.25;color:rgba(228,216,200,.62);}
+  .sbody p{margin-bottom:16px;}
+  .scursor{display:inline-block;width:1px;height:1em;background:var(--sakura);vertical-align:text-bottom;animation:blink .85s step-end infinite;margin-left:1px;opacity:.7;}
+  @keyframes blink{0%,100%{opacity:.7;}50%{opacity:0;}}
+  .sdate{margin-top:34px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:var(--td);letter-spacing:.1em;opacity:0;transition:opacity 1.2s;}
+  .ssign{margin-top:10px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;color:rgba(196,160,106,.58);opacity:0;transition:opacity 1.2s;}
+  .shint{margin-top:18px;font-size:10px;letter-spacing:.3em;color:var(--tf);font-style:italic;font-family:'Cormorant Garamond',serif;}
+
+  /* ━━━━━━━━━━━━━━━━━━━━━
+     MEMORY PETALS
+  ━━━━━━━━━━━━━━━━━━━━━ */
+  #s6{position:relative;z-index:2;padding:80px 20px 100px;display:flex;flex-direction:column;align-items:center;text-align:center;}
+  .msub{font-size:9px;letter-spacing:.5em;color:var(--td);text-transform:uppercase;margin-bottom:10px;}
+  .mh{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(20px,3.8vw,36px);font-weight:300;color:var(--cream);margin-bottom:46px;}
+  .pgrid{display:flex;flex-wrap:wrap;gap:13px;justify-content:center;max-width:520px;}
+  .mp{width:46px;height:56px;border-radius:50% 0 50% 0;background:radial-gradient(ellipse,rgba(240,168,188,.09),rgba(220,130,155,.03) 100%);border:1px solid rgba(240,168,188,.11);cursor:pointer;transition:all .4s ease;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(240,168,188,.45);transform:rotate(calc(var(--r)*1deg));}
+  .mp:hover,.mp.open{background:radial-gradient(ellipse,rgba(240,168,188,.28),rgba(220,130,155,.1) 100%);border-color:rgba(240,168,188,.42);transform:rotate(calc(var(--r)*1deg)) scale(1.12);box-shadow:0 0 16px rgba(240,168,188,.16);color:rgba(240,168,188,.8);}
+  .mtxt{margin-top:38px;max-width:480px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:var(--sakura-pale);line-height:1.95;min-height:76px;opacity:0;transition:opacity .7s ease;}
+  .mtxt.on{opacity:1;}
+
+  /* ━━━━━━━━━━━━━━━━━━━━━
+     CLOSING
+  ━━━━━━━━━━━━━━━━━━━━━ */
+  #s7{position:relative;z-index:2;padding:110px 24px 90px;display:flex;flex-direction:column;align-items:center;text-align:center;}
+  .cjp{font-family:'Noto Serif JP',serif;font-size:12px;letter-spacing:.55em;color:var(--sakura);opacity:.42;margin-bottom:34px;}
+  .ch{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,6vw,56px);font-weight:300;font-style:italic;color:var(--cream);line-height:1.4;max-width:640px;margin-bottom:36px;}
+  .cp{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(13px,1.9vw,16px);color:var(--td);max-width:420px;line-height:2.15;margin-bottom:70px;}
+  .rtag{font-size:9px;letter-spacing:.45em;color:var(--tf);text-transform:uppercase;margin-top:36px;}
+
+  @media(max-width:580px){
+    .swrap{padding:38px 22px 34px;}
+    .gbox{padding:46px 22px;}
+    .kre{grid-template-columns:52px 1px 1fr;gap:0 11px;}
+    .jcity{padding:0 14px;}
+  }
+</style>
+</head>
+<body>
+<div id="c1"></div><div id="c2"></div>
+<div id="stars"></div>
+<div id="petals"></div>
+
+<!-- OPENING -->
+<section id="s0">
+  <div class="ot">
+    <div class="ojp">五センチメートル毎秒</div>
+    <h1 class="oh1">5 cm / <em>detik</em></h1>
+    <div class="osub">kecepatan jatuhnya kelopak sakura — dan mungkin, perasaan</div>
+    <div class="oloc">Pasuruan · Surabaya · Bandung</div>
+  </div>
+  <div class="peron">
+    <div class="plamp"><div class="lglow"></div><div class="lpole"></div></div>
+    <div class="plamp"><div class="lglow"></div><div class="lpole"></div></div>
+    <div class="pfigure">
+      <div class="fhead"></div><div class="fbody"></div><div class="fshad"></div>
+    </div>
+    <div class="tracks"><div class="rail"></div><div class="rail"></div></div>
+    <div class="pfloor"></div>
+  </div>
+  <div class="scue"><span>gulir ke bawah</span><div class="sline"></div></div>
+</section>
+
+<!-- JARAK -->
+<section id="s1">
+  <div class="slbl fi">jarak yang tidak cukup dilawan dengan rindu</div>
+  <div class="jrow fi d1">
+    <div class="jcity"><div class="jcname">Pasuruan</div><div class="jcnote">rumah</div></div>
+    <div class="jarrow">
+      <div class="jnum">862</div>
+      <div class="junit">kilometer ke Bandung</div>
+    </div>
+    <div class="jcity"><div class="jcname">Bandung</div><div class="jcnote">Telkom University</div></div>
+  </div>
+  <div class="jnote fi d2">
+    Tapi jarak yang paling menyakitkan bukan yang ada di peta —<br>
+    melainkan antara peron keberangkatan dan kursi yang tidak pernah kamu isi.
+  </div>
+  <div class="cntrow fi d3">
+    <span>sudah</span>
+    <span class="cntnum" id="dayNum">—</span>
+    <span>hari berlalu sejak Agustus 2025</span>
+  </div>
+</section>
+
+<!-- KRONIK -->
+<section id="s2">
+  <div class="deco fi"><span>✦</span></div>
+  <h2 class="krh fi">Hal-hal yang tidak bisa kulupakan</h2>
+
+  <div class="kre"><div class="krw">SMA<br>kelas 1–2</div><div class="krln"></div><div class="krb">
+    <div class="krtitle">Perpustakaan setelah pulang sekolah</div>
+    <div class="krtxt">Aku selalu ke perpustakaan sendiri. Itu caraku menyendiri — bukan karena nyaman, tapi karena tidak tahu cara berbeda. Lalu entah sejak kapan, kamu ikut. Teman-temanmu pergi ke tempat lain. Kamu tetap ke tempatku. Aku tidak pernah memintamu. Tapi kamu tetap ada. Dan itu yang pertama kali membuat hatiku berdetak dengan cara yang tidak pernah kukenal sebelumnya.</div>
+    <span class="krtag">permulaan</span>
+  </div></div>
+
+  <div class="kre"><div class="krw">SMA<br>malam</div><div class="krln"></div><div class="krb">
+    <div class="krtitle">Dairy Milk dari Indomaret — tiga kali nyari</div>
+    <div class="krtxt">Aku pergi ke Indomaret malam-malam. Tidak tahu coklat apa yang enak — hanya tahu ingin membelikanmu sesuatu. Akhirnya pilih Dairy Milk, karena lebih mahal, logikanya pasti lebih enak. Mungkin aku bolak-balik sampai tiga kali sebelum berani masuk dan beli. Bodoh? Ya. Tapi itu pertama kalinya aku pernah mau repot hanya untuk seseorang.</div>
+    <span class="krtag">pertama kali</span>
+  </div></div>
+
+  <div class="kre"><div class="krw">SMA<br>sore</div><div class="krln"></div><div class="krb">
+    <div class="krtitle">Seblak di pertigaan arah rumahku</div>
+    <div class="krtxt">Warung seblak dekat perpustakaan, ke arah pertigaan jalan pulangku. Pertama kalinya aku makan di luar berdua dengan seorang perempuan. Aku tidak ingat bagaimana rasa seblaknya. Yang kuingat hanya kamu duduk di depanku, dan aku tidak tahu harus bilang apa, dan itu terasa jauh lebih menyenangkan dari apapun.</div>
+    <span class="krtag">ingatan kecil</span>
+  </div></div>
+
+  <div class="kre"><div class="krw">SMA<br>pertengkaran</div><div class="krln"></div><div class="krb">
+    <div class="krtitle">"Jangan blokir aku"</div>
+    <div class="krtxt">Kita sempat bertengkar. Berkali-kali. Dan aku yang pada saat itu masih sangat dingin dan clueless — blokir-blokirannya sangat childish kalau dipikir sekarang. Tapi kamu pernah bilang itu: "jangan blokir aku." Dan aku ingat itu sampai sekarang. Karena itu artinya kamu tidak mau kehilangan kontak — dan waktu itu aku tidak cukup dewasa untuk mengerti apa maksudnya.</div>
+    <span class="krtag">childish tapi nyata</span>
+  </div></div>
+
+  <div class="kre"><div class="krw">Kuliah<br>Sem 3–4</div><div class="krln"></div><div class="krb">
+    <div class="krtitle">Sleep call yang tidak dimatikan sampai 7 jam</div>
+    <div class="krtxt">Dari malam sampai 7 jam kemudian — handphone tidak pernah dimatikan. Aku tidak tahu siapa yang tertidur duluan. Yang kuingat hanya satu hal: aku tidak mau memutus sambungannya. Karena itu cara paling dekat yang bisa kita punya saat ini — suara satu sama lain di gelap.</div>
+    <span class="krtag">jarak yang sempat menghilang</span>
+  </div></div>
+
+  <div class="kre"><div class="krw">Kuliah<br>Sem 5</div><div class="krln"></div><div class="krb">
+    <div class="krtitle">Nonton 5 cm/detik bareng via Discord</div>
+    <div class="krtxt">Main game di Discord, nonton anime berdua. Di 5 cm/detik: dua orang dipisahkan jarak dan waktu, bertemu sebentar di stasiun, lalu terpisah lagi untuk selamanya. Kita menontonnya berdua. Tidak tahu kita akan menghidupkan plotnya. Sekarang setiap kali aku nonton ulang — aku menangis. Bukan karena filmnya. Tapi karena aku mengenal perasaan itu dari dalam.</div>
+    <span class="krtag">tanda yang tidak terbaca</span>
+  </div></div>
+
+  <div class="kre"><div class="krw">Agt 2025<br>01:35</div><div class="krln"></div><div class="krb">
+    <div class="krtitle">Pesan dini hari yang tidak dibalas</div>
+    <div class="krtxt">Jam 1:35 pagi. Aku chat kamu — bilang gabut, kesepian, bertanya apakah kamu akan meninggalkanku, apakah kamu akan menemukan orang baru. Aku bilang orang bilang aku membosankan dan jelek tapi kamu masih mau — dan aku tidak mengerti kenapa. Aku menunjukkan sisi paling rapuhku. Kamu diam. Dan diam itu lebih berat dari kata-kata manapun yang pernah kamu katakan.</div>
+    <span class="krtag">paling rapuh</span>
+  </div></div>
+
+  <div class="kre"><div class="krw">Sep 2025<br>01:31</div><div class="krln"></div><div class="krb">
+    <div class="krtitle">Pengakuan yang tidak bisa kutarik kembali</div>
+    <div class="krtxt">Aku jujur — bahwa aku jemput Abil, ke mal berdua, main game berdua. Bukan karena ada rasa ke dia. Tapi karena aku sepi dan kamu tiba-tiba diam setelah aku menunjukkan sisi paling lemahku. Itu bukan pembelaan. Kamu lalu membalas dengan panjang — tentang cewek Uzbekistan yang ku-muji cantik banget sambil bilang masih intens chat, tentang teman yang menabung untuk ketemu ceweknya di Uzbek (yang ku-bilang "tolol"), tentang tidak pernah datang ke Surabaya, tentang kamu yang selalu yang berusaha sementara aku selalu punya alasan. Kamu benar. Semua itu benar.</div>
+    <span class="krtag">kesalahan yang tidak terhapus</span>
+  </div></div>
+
+  <div class="kre"><div class="krw">Jan 2026</div><div class="krln"></div><div class="krb">
+    <div class="krtitle">Operasi — Tumor Mamae</div>
+    <div class="krtxt">Kamu mengirim foto "tara mak jreng" dan aku tahu sebelum kamu jelaskan. Aku tanya — kamu konfirmasi: tumor mamae, bukan axillary. Aku tidak bisa melakukan apa-apa dari sini selain "semoga tidak kenapa-kenapa." Dan itu terasa sangat tidak cukup.</div>
+    <span class="krtag">saat aku tidak bisa hadir</span>
+  </div></div>
+
+  <div class="kre"><div class="krw">10 Feb<br>2026</div><div class="krln"></div><div class="krb">
+    <div class="krtitle">Hujan petir Surabaya — kamu tidak bisa tidur sendiri</div>
+    <div class="krtxt">Petir di Surabaya tidak berhenti. Teman-temanmu tidak ada yang balas. Kamu WhatsApp aku. Kamu bilang maaf sudah ganggu. Aku tidak terganggu — melihat namamu muncul di layar waktu itu, setelah pertengkaran keluarga besar yang baru selesai, membuatku tenang seketika. Aku tidak bilang itu supaya kamu kasihan. Aku bilang karena itu jujur.</div>
+    <span class="krtag">malam petir</span>
+  </div></div>
+
+  <div class="kre"><div class="krw">11 Feb<br>2026</div><div class="krln"></div><div class="krb">
+    <div class="krtitle">"I may not have much to give"</div>
+    <div class="krtxt">Kamu membuat buku kecil — dari heyzine, dengan kata-kata itu. Kamu bilang perasaanmu ke aku tidak bisa hilang meski sudah lama ditekan, dan kamu tidak mau menyimpannya sendiri lagi karena semakin dipendam semakin sakit. Aku tidak tahu harus menjawab apa. Aku hanya tahu: buku itu akan aku simpan selamanya — dan "sangat membingungkan" bukan keluhan, itu kekagumanku.</div>
+    <span class="krtag">hadiah yang tidak terduga</span>
+  </div></div>
+</section>
+
+<!-- GUBENG SCENE -->
+<section id="s3">
+  <div class="slbl fi" style="margin-bottom:34px;">scene yang terus kubayangkan</div>
+  <div class="gbox fi">
+    <div class="gtime">18:50</div>
+    <div class="groute">Surabaya Gubeng → Pasuruan · Kamis malam</div>
+    <div class="gprosa">
+      Keretamu berangkat jam <em>18:50</em>.<br>
+      Aku tiba di Gubeng jam <em>17:20</em>.<br><br>
+      Satu jam tiga puluh menit —<br>
+      mungkin ke mal terdekat, beli <em>sesuatu</em>,<br>
+      kembali ke stasiun sebelum kamu datang.<br><br>
+      Hampir empat tahun tidak pernah bertemu.<br>
+      Dan ini adalah <em>1 jam 30 menit</em> itu.
+    </div>
+    <div class="trainline"></div>
+  </div>
+  <div class="gcinema fi">
+    Di film itu, Takaki menunggu Akari di stasiun —<br>
+    kereta terlambat dari jam 7 malam sampai jam 11-an.<br>
+    Mereka akhirnya bertemu. Hanya semalam. Lalu berpisah lagi.<br><br>
+    Aku menangis 6 kali menontonnya di bioskop.<br>
+    Aku tahu persis kenapa.
+  </div>
+</section>
+
+<!-- FILM & LAGU -->
+<section id="s4">
+  <div class="fradial"></div>
+  <div class="slbl fi">dari film yang tidak pernah bisa kuselesaikan dengan tenang</div>
+  <blockquote class="fquote fi" style="margin-top:20px;">
+    <span class="qm">"</span>
+    Betapapun aku terus bergerak maju,<br>
+    aku terus memikirkanmu.<br>
+    Kecepatan perasaan ini<br>
+    selalu lebih lambat dari yang kukira.
+    <span class="qm">"</span>
+  </blockquote>
+  <div class="fattr fi">5 Centimeters per Second — Makoto Shinkai</div>
+
+  <div class="sbox fi">
+    <div class="stitle">One More Time, One More Chance</div>
+    <div class="sdetail">Masayoshi Yamazaki · ±50.000 menit diputar</div>
+    <div class="sbar"><div class="sbfill"></div></div>
+    <div class="stime"><span>♪</span><span>∞</span></div>
+    <div class="slyr">
+      "itsumo sagashiteru dokokaka ni kimi no kage wo"<br>
+      <span style="font-size:10px;opacity:.5;letter-spacing:.05em;">(aku selalu mencarimu — bayangan dirimu, di suatu tempat)</span>
+    </div>
+  </div>
+</section>
+
+<!-- SURAT -->
+<section id="s5">
+  <div class="slbl fi" style="margin-bottom:30px;">surat yang belum pernah dicetak</div>
+  <div class="swrap fi" id="suratBox">
+    <div class="slabel">kepada —</div>
+    <div class="skepada">Diva,</div>
+    <div class="sbody" id="sb">
+      <p id="p1"></p>
+      <p id="p2" style="display:none"></p>
+      <p id="p3" style="display:none"></p>
+      <p id="p4" style="display:none"></p>
+    </div>
+    <div class="sdate" id="sd">Pasuruan — Kamis, Februari 2026</div>
+    <div class="ssign" id="ss">— Zaenal, yang masih berdiri di peron yang salah</div>
+  </div>
+  <div class="shint fi">// surat mengetik sendiri saat kamu tiba di sini //</div>
+</section>
+
+<!-- MEMORY PETALS -->
+<section id="s6">
+  <div class="msub fi">sentuh kelopak untuk membuka ingatan</div>
+  <h2 class="mh fi">Hal-hal kecil tentangmu yang tidak bisa kulupakan</h2>
+  <div class="pgrid" id="pg"></div>
+  <div class="mtxt" id="mt"></div>
+</section>
+
+<!-- CLOSING -->
+<section id="s7">
+  <div class="cjp fi">また会いたい — 会えるといいね</div>
+  <div class="ch fi">
+    "To be able to see you again"<br>
+    <span style="font-size:0.45em;color:var(--td);font-style:normal;letter-spacing:.2em;">kalimat yang sudah jadi lock screen-ku</span>
+  </div>
+  <div class="cp fi">
+    Sakura jatuh 5 cm per detik.<br>
+    Kereta berjalan ratusan kilometer per jam.<br>
+    Tapi ada perasaan tertentu yang tidak punya kecepatan —<br>
+    ia hanya ada, diam, menunggu diakui.
+  </div>
+  <div class="trainline" style="width:80%;max-width:480px;"></div>
+  <div class="rtag fi">Pasuruan 14:55 → Gubeng 17:20 · Harina Pasar Turi 05:55 → Bandung</div>
+</section>
+
+<script>
+// cursor
+const c1=document.getElementById('c1'),c2=document.getElementById('c2');
+document.addEventListener('mousemove',e=>{
+  c1.style.left=e.clientX+'px';c1.style.top=e.clientY+'px';
+  setTimeout(()=>{c2.style.left=e.clientX+'px';c2.style.top=e.clientY+'px';},90);
+});
+
+// stars
+const stE=document.getElementById('stars');
+for(let i=0;i<130;i++){
+  const s=document.createElement('div');s.className='star';
+  const sz=Math.random()*2+.4;
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*85}%;width:${sz}px;height:${sz}px;animation-duration:${2+Math.random()*5}s;animation-delay:${Math.random()*5}s;`;
+  stE.appendChild(s);
+}
+
+// petals
+const pE=document.getElementById('petals');
+function mkP(){
+  const p=document.createElement('div');p.className='petal';
+  const sz=6+Math.random()*7;
+  p.style.cssText=`left:${Math.random()*110-5}%;width:${sz}px;height:${sz*1.25}px;animation-duration:${7+Math.random()*8}s;animation-delay:${Math.random()*3}s;--drift:${(Math.random()-.5)*180}px;transform:rotate(${Math.random()*360}deg);`;
+  pE.appendChild(p);setTimeout(()=>p.remove(),17000);
+}
+setInterval(mkP,450);for(let i=0;i<10;i++)setTimeout(mkP,i*160);
+
+// day counter
+const ref=new Date('2025-08-29');
+const diff=Math.floor((new Date()-ref)/86400000);
+document.getElementById('dayNum').textContent=diff>0?diff:174;
+
+// scroll reveal
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');});
+},{threshold:.1});
+document.querySelectorAll('.fi,.kre').forEach(el=>obs.observe(el));
+
+// typewriter
+const paras=[
+  {id:'p1',t:'Aku tidak pandai merangkai kata. Kamu tahu itu. Kamu sudah lihat betapa dinginnya aku dulu di SMA — bagaimana aku tidak pernah minta maaf saat kita bertengkar, bagaimana aku blokir kamu seperti itu hal biasa, bagaimana aku tidak cukup dewasa untuk mengerti apa yang sebetulnya sedang terjadi antara kita.'},
+  {id:'p2',t:'Kamu pernah bilang kamu merasa rendah karena aku tidak pernah berusaha. Kamu yang selalu berani — berani ngobrol sama orang tuamu supaya bisa ketemu, sementara aku selalu punya alasan. Tidak ada motor. Mama tidak izin. Mama pasti curiga. Aku tidak membantah itu. Semua itu benar. Dan itu sesuatu yang tidak bisa kubayar kembali.'},
+  {id:'p3',t:'Tentang cewek Uzbekistan itu — aku tahu itu menyakitimu. Memuji orang lain cantik banget sambil bilang masih intens chat, dan kamu yang waktu itu baru balik dari luar negeri dan punya banyak hal yang harus dikerjakan — tentu kamu merasa tidak dihargai. Kamu tidak berlebihan. Aku yang tidak pernah berpikir.'},
+  {id:'p4',t:'Yang ingin aku sampaikan bukan pembelaan. Hanya ini: malam petir di Surabaya itu, waktu semua temanmu tidak ada yang balas — kamu masih menghubungi aku. Dan buku kecil yang kamu buat — dengan kata-kata "I may not have much to give" — kamu tidak tahu betapa banyak yang sebetulnya sudah kamu berikan. Malam ini di Gubeng, aku ada. Dengan sebatang Dairy Milk mungkin, dan perasaan yang tidak pernah tahu cara bergerak lebih cepat dari 5 cm per detik.'}
+];
+let pi=0,ci=0,ph=0;
+function typ(){
+  if(pi>=paras.length){
+    setTimeout(()=>{
+      document.getElementById('sd').style.opacity='1';
+      setTimeout(()=>document.getElementById('ss').style.opacity='1',700);
+    },300);return;
+  }
+  const el=document.getElementById(paras[pi].id);
+  el.style.display='block';
+  const tx=paras[pi].t;
+  if(ci<tx.length){
+    el.innerHTML=tx.substring(0,ci+1)+'<span class="scursor"></span>';
+    ci++;setTimeout(typ,22+Math.random()*16);
+  } else {
+    el.innerHTML=tx;pi++;ci=0;
+    if(pi<paras.length)setTimeout(typ,480);
+    else setTimeout(()=>{
+      document.getElementById('sd').style.opacity='1';
+      setTimeout(()=>document.getElementById('ss').style.opacity='1',700);
+    },400);
+  }
+}
+const sObs=new IntersectionObserver(en=>{
+  if(en[0].isIntersecting&&ph===0){ph=1;setTimeout(typ,700);}
+},{threshold:.3});
+sObs.observe(document.getElementById('suratBox'));
+
+// memory petals
+const mems=[
+  {n:'01',t:'Perpustakaan sore hari — kamu ikut, padahal teman-temanmu pergi ke tempat lain. Tidak ada yang memintamu. Tapi kamu tetap ke tempatku.'},
+  {n:'02',t:'Dairy Milk Indomaret malam-malam — tiga kali keliling sebelum berani masuk, karena tidak tahu yang mana yang enak, hanya tahu ingin memberi sesuatu.'},
+  {n:'03',t:'Seblak di pertigaan arah rumahku — pertama kalinya aku makan di luar berdua dengan seorang perempuan. Tidak ingat rasanya. Ingat wajahmu.'},
+  {n:'04',t:'Sleep call 7 jam. Dari malam sampai pagi. Handphone tidak pernah dimatikan. Tidak ada yang ingin memutus duluan.'},
+  {n:'05',t:'"Jangan blokir aku" — kamu bilang itu. Dan aku yang masih childish waktu itu tidak mengerti seberapa besar arti kata-kata itu.'},
+  {n:'06',t:'Nonton 5 cm/detik via Discord. Dua orang yang dipisahkan jarak. Kita menonton tanpa tahu kita akan menghidupkannya.'},
+  {n:'07',t:'"i always loved you" — aku screenshot dan jadikan wallpaper. Masih ada sampai sekarang.'},
+  {n:'08',t:'01:35, 29 Agustus 2025 — aku bilang kesepian, bertanya apakah kamu akan ninggalin aku. Pesan itu tidak dibalas.'},
+  {n:'09',t:'Operasi tumor mamae, Januari 2026 — aku hanya bisa bilang "get well soon" dari jauh. Itu tidak cukup, dan aku tahu.'},
+  {n:'10',t:'Hujan petir Surabaya, 10 Februari — semua temanmu tidak ada yang balas. Kamu WhatsApp aku. Aku tidak terganggu. Justru sebaliknya.'},
+  {n:'11',t:'"I may not have much to give, but I hope this mini book brings a small smile to u" — kamu tidak tahu betapa banyak yang sudah kamu berikan.'},
+  {n:'12',t:'Gubeng, Kamis malam — aku tiba jam 17:20. Keretamu jam 18:50. Di antara itu, ada 90 menit yang ingin kubuat berarti.'}
+];
+const rots=[-18,12,-8,20,-14,6,-22,10,-5,17,-11,8];
+const pg=document.getElementById('pg'),mt=document.getElementById('mt');
+mems.forEach((m,i)=>{
+  const el=document.createElement('div');el.className='mp';
+  el.style.setProperty('--r',rots[i%rots.length]);
+  el.innerHTML=`<span>${m.n}</span>`;
+  el.addEventListener('click',()=>{
+    document.querySelectorAll('.mp').forEach(x=>x.classList.remove('open'));
+    el.classList.add('open');
+    mt.classList.remove('on');
+    setTimeout(()=>{mt.textContent=m.t;mt.classList.add('on');},80);
+  });
+  pg.appendChild(el);
+});
+</script>
+</body>
+</html>

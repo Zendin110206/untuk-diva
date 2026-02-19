@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>また会える日まで — untuk Diva</title>
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ================= [V5 CURSOR LAYER] ================= -->
+  <div id="cur"></div>
+  <div id="cur-ring"></div>
+
+  <!-- ================= [V2 BACKGROUND LAYER] ================= -->
+  <canvas id="bgCanvas"></canvas>
+  <canvas id="snowCanvas"></canvas>
+  <canvas id="rainCanvas"></canvas>
+  <div id="petals"></div>
+
+  <!-- ================= [BGM LAYER] ================= -->
+  <audio id="bgm1" loop preload="auto">
+    <source src="assets/audio/bgm-1.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="bgm2" loop preload="auto">
+    <source src="assets/audio/bgm-2.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- ================= [V7 WELCOME NOTIFICATION] ================= -->
+  <div id="notif-overlay">
+    <div id="notif-box">
+      <div class="notif-topline"></div>
+      <div class="notif-flower">&#x1F338;</div>
+      <div class="notif-label">sebelum kamu masuk —</div>
+      <div class="notif-title">Website ini dibangun dalam <span>satu hari</span>,<br>oleh seseorang yang <span>belum tidur</span>.</div>
+      <div class="notif-body">
+        <p>Dibuat bukan karena diminta — tapi karena ada hal yang terlalu besar untuk dipendam sendiri, dan tidak ada kata-kata yang cukup untuk menyampaikannya langsung.</p>
+        <p>Harapannya hanya satu: semoga kamu yang membuka ini tahu, bahwa setiap kata di dalamnya sungguh-sungguh.</p>
+      </div>
+      <div class="notif-device">
+        <div class="notif-device-icon">&#x2328;</div>
+        <div class="notif-device-text"><span>Sangat Direkomendasikan</span><br>Buka menggunakan <em>laptop atau desktop</em>, bukan HP. Banyak detail kecil yang hanya bisa dinikmati di layar yang lebih besar.</div>
+      </div>
+      <button id="enterBtn" class="notif-btn">Bawa aku masuk &nbsp;&rarr;</button>
+      <div class="notif-jp">&#20116;&#12475;&#12531;&#12481;&#12513;&#12540;&#12488;&#12523;&#27585;&#31186;</div>
+    </div>
+  </div>
+
+  <!-- ================= [V4 CHAPTER NAV] ================= -->
+  <nav id="chapnav">
+    <div class="cnav-dot active" data-target="s0"><span class="cnav-label">Pembuka</span><div class="cnav-pip"></div></div>
+    <div class="cnav-dot" data-target="ch1"><span class="cnav-label">Asal Mula</span><div class="cnav-pip"></div></div>
+    <div class="cnav-dot" data-target="ch2"><span class="cnav-label">Momen Kecil</span><div class="cnav-pip"></div></div>
+    <div class="cnav-dot" data-target="ch3"><span class="cnav-label">Jarak</span><div class="cnav-pip"></div></div>
+    <div class="cnav-dot" data-target="ch4"><span class="cnav-label">Yang Pernah Salah</span><div class="cnav-pip"></div></div>
+    <div class="cnav-dot" data-target="ch5"><span class="cnav-label">Kebisuan Agustus</span><div class="cnav-pip"></div></div>
+    <div class="cnav-dot" data-target="ch6"><span class="cnav-label">Mini Book</span><div class="cnav-pip"></div></div>
+    <div class="cnav-dot" data-target="ch7"><span class="cnav-label">Gubeng 18:50</span><div class="cnav-pip"></div></div>
+    <div class="cnav-dot" data-target="ch8"><span class="cnav-label">Surat</span><div class="cnav-pip"></div></div>
+    <div class="cnav-dot" data-target="ch9"><span class="cnav-label">Doa</span><div class="cnav-pip"></div></div>
+    <div class="cnav-dot" data-target="ch10"><span class="cnav-label">Lentera</span><div class="cnav-pip"></div></div>
+  </nav>
+
+  <!-- ================= [V2 HERO - KERETA] ================= -->
+  <section id="s0">
+    <div class="hero-wrap">
+      <div class="moon"></div>
+
+      <div class="hero-text">
+        <span class="h-kana">また会える日まで · SMA Negeri 1 Pasuruan → Surabaya → Bandung</span>
+        <h1 class="h-main"> 
+          Hampir 4 tahun<br>
+          <em>belum pernah bertemu.</em>
+        </h1>
+        <p class="h-sub">tapi setiap malam, tanpa gagal — nama kamu yang terakhir kuingat</p>
+        <span class="h-date">stasiun gubeng · akhirnya · sebentar lagi</span>
+      </div>
+
+      <div class="platform-scene">
+        <div class="p-roof-wrap">
+          <div class="p-roof">
+            <div class="p-beam beam-1"></div>
+            <div class="p-beam beam-2"></div>
+            <div class="p-beam beam-3"></div>
+            <div class="p-beam beam-4"></div>
+            <div class="p-beam beam-5"></div>
+          </div>
+        </div>
+        <div class="lanterns">
+          <div class="ln"><div class="ln-wire"></div><div class="ln-body"></div></div>
+          <div class="ln"><div class="ln-wire"></div><div class="ln-body"></div></div>
+          <div class="ln"><div class="ln-wire"></div><div class="ln-body"></div></div>
+          <div class="ln"><div class="ln-wire"></div><div class="ln-body"></div></div>
+          <div class="ln"><div class="ln-wire"></div><div class="ln-body"></div></div>
+        </div>
+        <div class="bench"><div class="bench-top"></div></div>
+        <div class="figure"><div class="fig-head"></div><div class="fig-body"></div></div>
+        <div class="p-bg"></div>
+        <div class="train-pass">
+          <div class="t-eng"></div>
+          <div class="t-car"><div class="t-win w1"></div><div class="t-win w2"></div><div class="t-win w3"></div></div>
+          <div class="t-car"><div class="t-win w1"></div><div class="t-win w2"></div><div class="t-win w3"></div></div>
+          <div class="t-car"><div class="t-win w1"></div><div class="t-win w2"></div></div>
+        </div>
+        <!-- ================= [V1 REL KERETA] ================= -->
+        <div class="tracks">
+          <div class="rail rail-l"></div>
+          <div class="rail rail-r"></div>
+          <div class="sleepers-wrap" id="sleepersWrap"></div>
+        </div>
+      </div>
+
+      <div class="scroll-ind">
+        <span>gulir ke bawah</span>
+        <div class="scroll-line"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= [V5 CHAPTER 1 - ASAL MULA] ================= -->
+  <section id="ch1" class="chapter">
+    <div class="container">
+      <div class="ch-header">
+        <div class="ch-dot"></div>
+        <span class="ch-num">01</span>
+        <span class="ch-title">Asal Mula &nbsp;·&nbsp; 始まり</span>
+        <div class="ch-line"></div>
+      </div>
+
+      <div class="location-tag">SMA Negeri 1 Pasuruan &nbsp;·&nbsp; Program Akselerasi</div>
+
+      <div class="story-text">
+        Dulu, aku adalah orang yang <em>benar-benar sendiri.</em><br>
+        Waktu istirahat, aku sering banget ngabisin waktu ku di ruangan yang ada di belakang sekolah, ada ruangan kecil yang gak terpakai.<br>
+        Tidak pernah ngobrol, tidak pernah melihat ke arah siapapun.<br>
+        <strong>Termasuk kamu.</strong>
+      </div>
+
+      <div class="sub-text">
+        Sampai program akselerasi itu menempatkan kita di kelas yang sama untuk kedua kalinya —
+        dan entah kenapa, dari sekian banyak tempat yang bisa kamu tuju saat teman-temanmu pergi ke tempat lain,
+        kamu memilih untuk ikut ke <em>perpustakaan.</em>
+      </div>
+
+      <div class="pull-quote">
+        <div class="pull-quote-text">
+          Hari itu — seblak di pertigaan dekat perpustakaan, makan berdua,<br>
+          untuk pertama kalinya dalam hidupku aku beneran ngobrol dengan cewek<br>
+          dan duduk makan di luar berdua.<br>
+          <span class="pull-quote-em">Dari situ semuanya menjadi aneh, dan sangat tidak bisa dijelaskan.</span>
+        </div>
+        <div class="pull-quote-attr">Kenangan pertama &nbsp;·&nbsp; 最初の記憶</div>
+      </div>
+
+      <div class="sub-text">
+        Pas kamu ngambek (i believe you don't remember this), aku nyoba tuh malem-malem pergi ke Indomaret/Alfamart. Aku ngomong ke ayahku, minta uang sekian ribu, terus pas ditanya apa, aku bilangnya buat jajan lah atau jaga-jaga. Padahal aslinya ke indomart, terus pas nyampe bingung mau beli coklat apa (well they say coklat will makes woman happy). Akhirnya aku milih <em>Dairy Milk</em> —
+        karena lebih mahal, jadi aku kira pasti lebih enak.<br><br> Owh yaa, dulu itu ada sempet viral coklat <em>Silver Queen</em> yang bentuk nya <em>Love</em>. Nyari sampai tiga kali, enggak ketemu. Tapi pas dipikir pikir, kalaupun beli, nyembunyiin pas sampai rumah gimanaa. 
+        Hahaha that is so silly. But hey, aku berhasil ngasih ke kamu, meskipun kayaknya gak berarti deh, karena besoknya enggak berubah 😅 <br><br>
+        Lalu ada blokir-blokiran, ada pertengkaran, ada baikan.
+        Kamu pernah bilang <em>"Jangan di blokir"</em> — dan kata-kata itu ternyata aku ingat sampai sekarang.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= [V5 CHAPTER 2 - MOMEN KECIL] ================= -->
+  <section class="chapter" id="ch2">
+    <div class="container">
+      <div class="ch-header">
+        <div class="ch-dot"></div>
+        <span class="ch-num">02</span>
+        <span class="ch-title">Momen Kecil yang Tidak Kecil &nbsp;·&nbsp; 小さなこと</span>
+        <div class="ch-line"></div>
+      </div>
+
+      <div class="moments-grid">
+        <div class="moment-card">
+          <span class="mc-icon">📚</span>
+          <div class="mc-title">Perpustakaan Kota Pasuruan</div>
+          <div class="mc-body">Kamu memilih duduk di sebelahku sementara semua temanmu pergi ke tempat lain. Aku tidak pernah tahu kenapa. Tapi itu yang mengubah segalanya.</div>
+          <div class="mc-jp">図書館 &nbsp;·&nbsp; Semester 2 Akselerasi</div>
+        </div>
+
+        <div class="moment-card">
+          <span class="mc-icon">🍫</span>
+          <div class="mc-title">Dairy Milk Tengah Malam</div>
+          <div class="mc-body">Memilih yang paling mahal karena aku tidak tahu coklat apa yang enak. Nyari sampai tiga kali. Silly things — tapi itu pertama kalinya aku pernah mau melakukan sesuatu untuk seseorang.</div>
+          <div class="mc-jp">深夜のチョコレート &nbsp;·&nbsp; Indomaret</div>
+        </div>
+
+        <div class="moment-card">
+          <span class="mc-icon">☎️</span>
+          <div class="mc-title">Sleep Call 7 Jam</div>
+          <div class="mc-body">HP tidak pernah dimatikan. Dari malam sampai pagi. Dua orang yang sebenarnya sedang tertidur di ujung telepon yang sama — sejauh ratusan kilometer, tapi terasa seperti satu ruangan.</div>
+          <div class="mc-jp">深夜通話 &nbsp;·&nbsp; Semester 3-4</div>
+        </div>
+
+        <div class="moment-card">
+          <span class="mc-icon">🎮</span>
+          <div class="mc-title">Main Game di Discord</div>
+          <div class="mc-body">Telkom University Bandung dan Poltekkes Surabaya — dua kota berbeda, satu Discord server. Itu adalah versi LDR yang paling dekat yang bisa kami temukan.</div>
+          <div class="mc-jp">Discord &nbsp;·&nbsp; Semester 5 最高の時期</div>
+        </div>
+
+        <div class="moment-card">
+          <span class="mc-icon">🌸</span>
+          <div class="mc-title">Nonton 5cm/s Berdua</div>
+          <div class="mc-body">Takaki dan Akari. Jarak yang tidak pernah bisa dijembatani kata-kata. Kami nonton bersama — dan mungkin keduanya tahu ini bukan hanya tentang anime itu.</div>
+          <div class="mc-jp">秒速5センチメートル &nbsp;·&nbsp; Anime Together</div>
+        </div>
+
+        <div class="moment-card">
+          <span class="mc-icon">💬</span>
+          <div class="mc-title">"I always loved you"</div>
+          <div class="mc-body">Tiga kata yang pernah kamu kirimkan. Yang aku jadikan wallpaper. Yang bahkan setelah semua yang terjadi, masih terasa seperti hal paling berharga yang pernah aku terima.</div>
+          <div class="mc-jp">ずっと愛してた &nbsp;·&nbsp; Wallpaper</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= [V5/V4/V2/V3 CHAPTER 3 - JARAK] ================= -->
+  <section class="chapter" id="ch3">
+    <div class="container">
+      <div class="ch-header">
+        <div class="ch-dot"></div>
+        <span class="ch-num">03</span>
+        <span class="ch-title">Jarak &nbsp;·&nbsp; 距離</span>
+        <div class="ch-line"></div>
+      </div>
+
+      <!-- ================= [V4 DISTANCE INTRO BLOCK] ================= -->
+      <div class="distance-hero">
+        <h2 class="distance-intro-title">JARAK yang tidak cukup dilawan dengan RINDU</h2>
+        <div class="dist-num-wrap">
+          <div class="dist-num">792</div>
+          <div class="dist-num-fill vis">792</div>
+        </div>
+        <div class="dist-sub">kilometer · Pasuruan → Bandung</div>
+        <div class="dist-eq">Sejak lulus SMA — hampir empat tahun. Tidak pernah bertemu. Tidak pernah video call sekalipun.</div>
+      </div>
+
+      <!-- ================= [V2 ROUTE ANIMATION BLOCK] ================= -->
+      <h2 class="s-title fade d1">Dua kota, satu hati</h2>
+      <p class="s-italic fade d2">yang selalu mencari jalan pulang</p>
+
+      <div class="distance-visual fade d2">
+        <div class="city-pair">
+          <div class="city">
+            <div class="city-dot pink"></div>
+            <div class="city-name">Pasuruan</div>
+            <div class="city-tag">dia · aku · asal</div>
+          </div>
+          <div class="d-line d-line-1">
+            <span class="d-km">≈ 70 km · Poltekkes Surabaya</span>
+            <div class="d-train"></div>
+          </div>
+          <div class="city">
+            <div class="city-dot blue"></div>
+            <div class="city-name">Surabaya</div>
+            <div class="city-tag">dia · menunggu</div>
+          </div>
+        </div>
+        <div class="city-pair">
+          <div class="city">
+            <div class="city-dot pink"></div>
+            <div class="city-name">Pasuruan</div>
+            <div class="city-tag">rumah · rindu</div>
+          </div>
+          <div class="d-line d-line-2">
+            <span class="d-km">≈ 770 km · Telkom University Bandung</span>
+            <div class="d-train d-train-delay"></div>
+          </div>
+          <div class="city">
+            <div class="city-dot blue"></div>
+            <div class="city-name">Bandung</div>
+            <div class="city-tag">aku · menunggu</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= [V3 DISTANCE CLOSING BLOCK] ================= -->
+      <div class="jnote">
+        Tapi jarak yang paling menyakitkan bukan yang ada di peta —<br>
+        melainkan antara peron keberangkatan dan kursi yang tidak pernah kamu isi.
+      </div>
+
+      <!-- ================= [V1 DAYS COUNTER BLOCK] ================= -->
+      <div class="days-counter" id="dc">
+        <div class="days-number" id="daysNum">0</div>
+        <div class="days-label">hari sejak pertama kali hati ini bergetar</div>
+      </div>
+
+      <!-- ================= [V5 DISTANCE CLOSING TEXT] ================= -->
+      <div class="story-text ch3-tail">
+        Hampir 3 sampai 4 tahun kami tidak pernah bertemu tatap muka. Tidak pernah video call sekalipun. Hanya suara, teks, dan layar yang bercahaya di tengah malam.<br><br>
+        <em>Dan entah kenapa itu tetap terasa cukup — sekaligus tidak pernah benar-benar cukup.</em>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= [V5/V2 CHAPTER 4 - YANG PERNAH SALAH] ================= -->
+  <section class="chapter" id="ch4">
+    <div class="container">
+      <div class="ch-header">
+        <div class="ch-dot"></div>
+        <span class="ch-num">04</span>
+        <span class="ch-title">Yang Pernah Salah &nbsp;·&nbsp; 過ち</span>
+        <div class="ch-line"></div>
+      </div>
+
+      <!-- ================= [V2 CONFESSION HEADER BLOCK] ================= -->
+      <h2 class="s-title">Hal-hal yang seharusnya kulakukan</h2>
+      <p class="s-italic">Ini bagian yang paling sulit untuk ditulis — tapi justru karena itu, ia harus ada di sini.</p>
+
+      <!-- ================= [V2 CONFESSION BODY BLOCK] ================= -->
+      <div class="confession">
+        <div class="conf-kana">pengakuan · bukan alasan</div>
+
+        <div class="conf-item">
+          <div class="conf-num">satu</div>
+          <div class="conf-title">Dingin tanpa alasan di SMA</div>
+          <div class="conf-body">Setiap kali kita bertengkar, aku diam. <em>Tidak pernah minta maaf.</em> Bukan karena tidak mau — aku hanya terlalu clueless, terlalu kaku, terlalu tidak tahu caranya. Aku bahkan tidak sadar bahwa diam bisa menyakitkan.</div>
+        </div>
+
+        <div class="conf-item">
+          <div class="conf-num">dua</div>
+          <div class="conf-title">Kesalahan terbesar yang tidak akan pernah kulupakan</div>
+          <div class="conf-body">Saat hubungan kita sedang tidak baik, ada seseorang yang mendekati aku — teman SD. Aku menerimanya. Tapi kemudian aku pergi begitu saja — <em>tanpa kabar, tanpa penjelasan, ghosting.</em> Alasannya karena aku masih mencintaimu. Tapi itu tidak membenarkan apa yang kulakukan kepadanya. Itu tetap salah. Dan aku tidak akan pernah melakukan hal itu lagi.</div>
+        </div>
+
+        <div class="conf-item">
+          <div class="conf-num">tiga</div>
+          <div class="conf-title">Cewe lain — dan kata-kata yang seharusnya tidak pernah keluar</div>
+          <div class="conf-body">Aku memuji perempuan lain di depanmu padahal kamu pas itu sedang curhat — bilang dia cantik banget, bilang masih <em>intens chat</em> dengannya di Telegram pas aku keluar negeri. Kamu bilang : "cewek mana yang enggak minder kalau kek gitu". Aku tidak pernah berpikir kalau kata-kata itu menyakitkan (which is i should have known better). Tidak ada alasan yang bisa membenarkan. Aku hanya tidak cukup peka. Tidak cukup peduli pada perasaanmu.</div>
+        </div>
+
+        <div class="conf-item">
+          <div class="conf-num">empat</div>
+          <div class="conf-title">Tidak pernah datang ke Surabaya</div>
+          <div class="conf-body">Kamu pernah menawarkan untuk menjemput. Aku menolak — dengan berbagai alasan: tidak ada motor, mami tidak mengizinkan. Sementara teman cowomu menabung dari gaji bengkel yang kecil, membuat list tempat wisata, dan memenuhi semua itu untuk teman perempuannya di Surabaya — padahal mereka juga LDR. (Jogja - Surabaya yaa kalau gak salah?) <em>Kamu tidak pernah minta apa-apa selain waktuku.</em> Dan itu saja tidak bisa kuberikan.</div>
+        </div>
+
+        <div class="conf-item">
+          <div class="conf-num">lima</div>
+          <div class="conf-title">Membiarkan semuanya tidak jelas</div>
+          <div class="conf-body">Kamu bertanya kita ini apa. Aku bilang "komitmen sudah cukup." Tapi aku tidak pernah membuktikan komitmen itu dengan apapun yang nyata. Tidak pernah mendatangi, tidak pernah meluangkan waktu, tidak pernah membuat statusnya jelas. <em>Kamu berhak mendapat kejelasan</em> — dan itu yang tidak pernah kuberikan.</div>
+        </div>
+
+        <div class="conf-item">
+          <div class="conf-num">enam</div>
+          <div class="conf-title">Masih banyak lagi</div>
+          <div class="conf-body">List ini gak bakalan habis kalau disebutin semuaa</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= [V5/V2 CHAPTER 5 - AGUSTUS & SEPTEMBER] ================= -->
+  <section class="chapter" id="ch5">
+    <div class="container">
+      <div class="ch-header">
+        <div class="ch-dot"></div>
+        <span class="ch-num">05</span>
+        <span class="ch-title">Agustus yang Menghilang &nbsp;·&nbsp; 沈黙</span>
+        <div class="ch-line"></div>
+      </div>
+
+      <span class="kana fade">沈黙 · kebisuan agustus</span>
+      <h2 class="s-title fade d1">Agustus yang menghilang</h2>
+      <p class="s-italic fade d2">dan September yang akhirnya berbicara</p>
+
+      <div class="rain-quote fade d2">
+        <div class="rq-date">29 Agustus 2025 · 01:35 dini hari</div>
+        <div class="rq-block">
+          <div class="rq-who him">Zaenal · saat semua orang sudah tidur</div>
+          <div class="rq-text">
+            "dipa, aku kesepian."<br><br>
+            "apakah dipa bakalan ninggalin aku? apakah bakalan nemu orang baru?"<br><br>
+            "nandita kuat loh — orang bilang aku bosenan dan jelek — kok masih mau? tidak terpaksa kan? <em>tidak ngerasa kasian kan?</em>"
+          </div>
+        </div>
+
+        <div class="silence">
+          <div class="silence-text">tidak ada jawaban · dia sedang tidur · atau diam · atau keduanya · <br>dan dia memilih tidak memberitahu</div>
+        </div>
+
+        <div class="rq-date rq-date-late">15 September 2025 · pengakuan yang datang terlambat</div>
+        <div class="rq-block">
+          <div class="rq-who him">Zaenal</div>
+          <div class="rq-text">Aku ngerasa cheated ke kamu. Kemarin aku jemput Abil, pergi ke mal, main game berdua. Apakah aku enjoy? <em>Tidak.</em> Setiap detik aku mikirin kamu. Aku ngerasa bersalah dan berdosa setiap detiknya. Aku gak suka dia, gak ada rasa ke dia. Tapi sejak pesanku yang sebelumnya tidak kamu respons — padahal itu sisi paling lemahku — aku makin ngerasa sendirian.</div>
+        </div>
+        <div class="rq-block">
+          <div class="rq-who her">diva · akhirnya berbicara</div>
+          <div class="rq-text">
+            Kamu memuji cewek Uzbek cantik banget, bilang masih intens chat dengannya — cewek mana yang tidak minder?<br><br>
+            Kamu bilang teman cowomu tolol karena menabung untuk ketemu cewek yang dia suka di Uzbek. Tapi <em>bukannya itu namanya effort?</em> Teman cowomu yang di Jogja, LDR, bela-belain nabung dari gaji bengkel kecil, bikin list wisata, dan semua dipenuhi. Kamu sama aku juga LDR — tapi kamu tidak melakukan separuhnya.<br><br>
+            Aku sudah taruh diriku di posisi paling rendah. Aku tidak pernah minta dibelikan apa-apa. Hanya minta waktumu. Dan itu saja tidak bisa.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= [V5/V4/V5 CHAPTER 6 - MINI BOOK & HUJAN] ================= -->
+  <section class="chapter" id="ch6">
+    <div class="container">
+      <div class="ch-header">
+        <div class="ch-dot"></div>
+        <span class="ch-num">06</span>
+        <span class="ch-title">Mini Book &amp; Hujan di Surabaya &nbsp;·&nbsp; 再会</span>
+        <div class="ch-line"></div>
+      </div>
+
+      <!-- ================= [V5 CH6 OPENING] ================= -->
+      <div class="story-text fade">
+        10 Februari 2026. Hujan deras di Surabaya — <em>petir tidak berhenti.</em><br>
+        Kamu menelepon semua temanmu. Tidak ada yang angkat.<br>
+        Lalu kamu menghubungi aku.
+      </div>
+
+      <div class="sub-text fade d1 ch6-delay-20">
+        Keluarga ku baru saja bertengkar besar pada saat malam hari itu. Tapi ketika nama kamu muncul di layar —
+        semuanya tiba-tiba tenang. Aku jadi agak senang, karena aku kira kamu sudah melupakan aku, atau tidak mau bicara lagi.
+        <br><br>
+        Lalu 00:46 dini hari, 11 Februari — kamu mengirimkan <em>link heyzine.</em> Sebuah mini book.
+      </div>
+
+      <!-- ================= [V4 FLIPBOOK BLOCK] ================= -->
+      <div class="flipbook-block fade d2 ch6-delay-40">
+        <div class="flipbook-vis" id="flipbook">
+          <div class="flipbook-spine"></div>
+          <div class="flipbook-content">
+            <div class="flipbook-heart">💌</div>
+            <div class="flipbook-txt">
+              "I may not have much to give, but I hope this mini book brings a small smile to u"
+            </div>
+          </div>
+          <div class="flipbook-pages">
+            <div class="fpage"></div>
+            <div class="fpage"></div>
+            <div class="fpage"></div>
+            <div class="fpage"></div>
+            <div class="fpage"></div>
+          </div>
+        </div>
+        <div>
+          <div class="scene-note">手作り · Buatan Tangan</div>
+          <div class="bigquote">
+            "this is so cute,<br><em>i will cherish this forever."</em>
+          </div>
+          <p class="prose ch6-mt-24">
+            Jam 00:46 dini hari, dia mengirim link buku kecil yang dia buat — dengan tangannya sendiri, dengan perasaannya sendiri. Di saat kamu sedang habis bertengkar dengan keluarga, tiba-tiba ada cahaya kecil itu. Kamu bilang dia sangat membingungkan. Tapi mungkin itu karena perasaan yang tulus memang selalu terasa tidak terduga.
+          </p>
+        </div>
+      </div>
+
+      <!-- ================= [V5 CH6 CLOSING] ================= -->
+      <div class="pull-quote fade d3 ch6-delay-60 ch6-mt-60">
+        <div class="pull-quote-text">
+          "karna ternyata perasaanku ke kmu gabisa ilang gitu aja,<br>
+          semakin aku pendem semakin aku sendiri yg sakit-sakitan."
+        </div>
+        <div class="pull-quote-attr">— Diva &nbsp;·&nbsp; 11 Feb 2026 &nbsp;·&nbsp; 14:32</div>
+      </div>
+
+      <div class="story-text fade d3 ch6-delay-70">
+        Dan untuk itu — aku tidak punya kata-kata yang cukup.
+        Kamu sangat membingungkan. Kamu sangat luar biasa.
+        <em>Kamu masih di sini, padahal kamu tidak harus.</em>
+      </div>
+
+      <div class="sub-text fade d4 ch6-delay-85 ch6-mt-32">
+        Kamu juga sedang dalam proses pemulihan dari operasi tumor mamae —
+        bahkan dalam kondisi itu, kamu masih menyiapkan sebuah mini book untukku.
+        <br><br>
+        <em>Aku tidak tahu kata apa yang harus aku gunakan selain: terima kasih.</em>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= [V5 CHAPTER 7 - GUBENG 18:50] ================= -->
+  <section class="chapter" id="ch7">
+    <div class="container">
+      <div class="ch-header">
+        <div class="ch-dot"></div>
+        <span class="ch-num">07</span>
+        <span class="ch-title">Gubeng, 18:50 &nbsp;·&nbsp; 今夜</span>
+        <div class="ch-line"></div>
+      </div>
+
+      <div class="story-text fade">
+        Aku sudah beli tiketnya.<br>
+        Kereta lokal dari Pasuruan pukul <em>14:55</em>.<br>
+        Tiba di Gubeng sekitar <em>17:20</em>.<br>
+        Dan kamu — keretamu berangkat pukul <em>18:50</em>.
+      </div>
+
+      <div class="plan-timeline ch7-mt-70">
+        <div class="plan-step fade d1">
+          <div class="ps-dot"></div>
+          <div class="ps-time">17:20 &nbsp;·&nbsp; Tiba di Stasiun Gubeng</div>
+          <div class="ps-title">Sampai di Surabaya</div>
+          <div class="ps-body">
+            Pertama kalinya datang ke Surabaya dengan satu tujuan yang jelas.
+            Bukan karena transit, bukan karena kebetulan.
+            <em>Karena kamu ada di sini.</em> Biasanya aku cuman dengerin lagu "aku selalu mencari bayanganmu. Di peron stasiun, di jendela kereta, di mana pun. Meskipun aku tahu kamu mungkin tidak ada di sana." haha
+          </div>
+        </div>
+
+        <div class="plan-step fade d2">
+          <div class="ps-dot"></div>
+          <div class="ps-time">~17:30 &nbsp;·&nbsp; Mal atau Indomaret dekat Stasiun</div>
+          <div class="ps-title">Mencari Gantungan Kunci &amp; Dairy Milk</div>
+          <div class="ps-body">
+            Ini cuman rencanaaa, aku udah liat map katanya 5 menit dari stasiun Gubeng, Niatku gantungan kunci untuk aku taruh di tasku — supaya setiap kali aku lihat tasku, terasa seperti ada seseorang yang selalu di sisiku.
+            Dan Dairy Milk, karena itu adalah caraku yang pertama dan paling jujur untuk mengungkapkan sesuatu.
+            <em>Tapi aku sendiri kayaknya gak akan beli gantungan kunci, takut kelamaan dan enggak kesampean dari mall Grand City. Mohon maaf yaaaa kalau cuman gini doank atau ekspetasi lebih.</em>
+          </div>
+        </div>
+
+        <div class="plan-step fade d3">
+          <div class="ps-dot"></div>
+          <div class="ps-time">~18:30–18:50 &nbsp;·&nbsp; Stasiun Gubeng</div>
+          <div class="ps-title">Mencarimu di Stasiun</div>
+          <div class="ps-body">
+            Aku tidak tahu kamu biasanya datang berapa menit sebelum berangkat.
+            Tapi aku akan menunggu. Dan kalau kamu tiba, ada disana, muncul,
+            aku ingin menyerahkan sesuatu — sebuah Dairy Milk itu, minuman dan mungkin sepucuk tulisan.
+            <em>Aku takut, seneng, deg-deg an. Tapi aku tetap akan datang.</em>
+          </div>
+        </div>
+
+        <div class="plan-step fade d4">
+          <div class="ps-dot"></div>
+          <div class="ps-time">18:50 &nbsp;·&nbsp; Keretamu Berangkat</div>
+          <div class="ps-title">Kamu Pergi ke Pasuruan</div>
+          <div class="ps-body">
+            Mungkin beli 2 tiket ke Pasuruan — bukan untuk memaksa kamu, butttt maybeee, just maybe i can sit beside you. Meskipun udah tau jawabannya, and maybe membuang uang 12.000 wkwkwk<br>
+            Dan aku — mungkin akan langsung pergi ke stasiun, menunggu Harina pukul 5:55 pagi dari Pasar Turi ke Bandung.
+            Sendirian di stasiun malam hari, seperti Takaki menunggu Akari yang tidak pernah datang.
+            <em>Tapi malam ini — setidaknya aku sudah mencoba datang.</em>
+          </div>
+        </div>
+      </div>
+
+      <div class="station-countdown fade ch7-delay-50">
+        <div class="sc-label">KERETA KAMU BERANGKAT &nbsp;·&nbsp; 出発時刻</div>
+        <div class="sc-train">Stasiun Gubeng → Pasuruan</div>
+        <div class="sc-time">18:50</div>
+        <div class="sc-note">
+          Setiap detik yang mendekat ke jam itu terasa seperti jantungku berdenyut lebih kencang.<br>
+          Aku tidak tahu apakah kamu akan ada di sana. Aku tidak tahu apakah kamu akan mau.<br>
+          <em>Tapi setidaknya malam ini, aku tidak ingin menyesal karena tidak mencoba.</em>
+        </div>
+      </div>
+
+      <!-- ================= [V3 CH7 FILM REFLECTION] ================= -->
+      <div class="ch7-film-note fade d5">
+        Di film itu, Takaki menunggu Akari di stasiun —<br>
+        kereta terlambat dari jam 7 malam sampai jam 11-an.<br>
+        Mereka akhirnya bertemu. Hanya semalam. Lalu berpisah lagi.<br><br>
+        Aku menangis 6 kali di hari itu saat aku mau dan pergi menontonnya di bioskop (kedua kalinya ke bioskop dan gak nyangka aku punya alasan buat keluar rumah dan pergi ke mall wkwk).<br>
+        Aku tahu persis kenapa.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= [V4 CHAPTER 8 - SURAT] ================= -->
+  <section class="chapter" id="ch8">
+    <div class="container">
+      <div class="chap-header fade">
+        <div class="chap-num">08</div>
+        <div class="chap-eyebrow">
+          <div class="chap-dot"></div>
+          <span class="chap-dot-label">手紙 · Untuk Dibaca</span>
+          <div class="chap-rail"></div>
+        </div>
+        <h2 class="chap-title"><em>Kalau Saja</em><br>Kata-kata Tidak Pernah Macet</h2>
+      </div>
+
+      <div class="surat-wrap fade d1">
+        <div class="surat-ko">愛</div>
+        <div class="surat-date">Februari 2026 · Bandung → Surabaya</div>
+
+        <div class="surat-to">
+          Diva yang <em>membingungkan</em>, luar biasa, dan entah apa lagi —
+        </div>
+
+        <p class="surat-p">
+          Aku tidak pernah pintar merangkai kata. Tapi kali ini aku mau mencoba apa adanya, tanpa memperbaiki, tanpa memilih kata yang terdengar lebih baik dari yang sebenarnya aku rasakan.
+        </p>
+        <p class="surat-p">
+          Aku sering memikirkanmu di perpustakaan itu. Kamu yang memilih untuk tetap di sana bersamaku padahal teman-temanmu sudah pergi. Waktu itu aku tidak tahu itu artinya apa. Sekarang aku tahu — itu mungkin momen paling penting dalam hidupku yang tidak aku sadari.
+        </p>
+        <p class="surat-p">
+          Aku salah sudah tidak pernah benar-benar mengusahakanmu. Aku tahu kamu tidak pernah minta aneh-aneh — hanya waktuku, hanya kehadiranku. Dan aku selalu punya alasan. <em>Mama melarang. Tidak ada motor. Mami akan curiga.</em> Sementara kamu diam-diam membujuk orang tuamu sendiri, karena kamu mau mencoba. Aku malu mengakuinya.
+        </p>
+        <p class="surat-p">
+          Di malam saat kamu menghubungiku karena petir tidak berhenti dan semua temanmu tidak menjawab — aku ingin sekali bisa ada di sana. Bukan di ujung telepon. Beneran ada. Di sebelahmu.
+        </p>
+        <p class="surat-p">
+          Buku kecil yang kamu kirimkan — aku tidak tahu harus bagaimana. Kamu membingungkan, Diva. Tapi dalam arti yang paling indah yang pernah aku rasakan. Seseorang yang mengatakan harus menjauh, tapi masih <strong>membuatkan buku itu</strong>. Seseorang yang bilang perasaannya tidak bisa hilang begitu saja. Aku tidak tahu apa yang aku lakukan untuk layak mendapatkan itu.
+        </p>
+        <p class="surat-p">
+          Aku sudah beli tiket. Kereta jam 5:55. Bukan karena kamu memintanya. Tapi karena sudah terlalu lama aku diam dan berharap semuanya selesai sendiri — dan ternyata tidak. Kali ini aku yang ingin bergerak duluan.
+        </p>
+        <p class="surat-p">
+          Aku mau ketemu kamu. Bukan untuk banyak bicara. <em>Cukup untuk melihat kamu.</em> Seperti Takaki yang akhirnya sampai ke stasiun itu — dengan salju dan keterlambatan dan semua yang serba tidak sempurna — tapi tetap datang.
+        </p>
+        <p class="surat-p surat-p-emphasis">
+          Aku tidak memintamu untuk menjawab apapun sekarang. Aku hanya ingin kamu tahu: kamu adalah orang terbaik yang pernah aku temui, dan aku menyesal membutuhkan waktu selama ini untuk akhirnya berani mengakuinya.
+        </p>
+
+        <div class="surat-closing">
+          <div class="surat-dari">dari seseorang yang akhirnya belajar</div>
+          <div class="surat-nama">— Muhammad Zaenal Abidin Abdurrahman</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= [V3 MEMORY PETALS 01-12] ================= -->
+  <section id="memories">
+    <div class="msub fade">sentuh kelopak untuk membuka ingatan</div>
+    <h2 class="mh fade d1">Hal-hal kecil tentangmu yang tidak bisa kulupakan</h2>
+    <div class="pgrid fade d2" id="pg"></div>
+    <div class="mtxt" id="mt"></div>
+  </section>
+
+  <!-- ================= [V5 CHAPTER 9 - PENUTUP / DOA] ================= -->
+  <section class="chapter" id="ch9">
+    <div class="container">
+      <p class="doa-label fade">✦ &nbsp; tulis do'amu dan lepaskan ke angin &nbsp; ✦</p>
+      <div class="doa-form fade d1">
+        <input class="doa-input" id="doaInput" type="text" placeholder="tuliskan sesuatu yang kamu harapkan...">
+        <br>
+        <button class="doa-btn" id="doaBtn">散る &nbsp;·&nbsp; Lepaskan</button>
+      </div>
+      <div class="doa-output" id="doaOutput"></div>
+    </div>
+  </section>
+
+  <!-- ================= [V2 LANTERN SECTION] ================= -->
+  <section class="chapter" id="ch10">
+    <div class="container">
+      <span class="kana fade">灯篭 · lentera yang kamu lepas</span>
+      <h2 class="s-title fade d1">Nyalakan lentera untuknya</h2>
+      <p class="s-italic fade d2">klik di mana saja — biarkan mereka terbang</p>
+
+      <canvas id="lantCanvas" class="fade d3" width="700" height="400"></canvas>
+      <p class="lant-hint fade d4">klik: lepas lentera · klik kanan: hapus semua</p>
+    </div>
+  </section>
+
+  <!-- ================= [V5 CLOSING WITH V4 SPEED LINE] ================= -->
+  <section id="closing">
+    <div class="closing-bg"></div>
+    <div class="closing-inner fade d1">
+      <span class="closing-kanji">また会えたら</span>
+      <p class="closing-main">
+        aku harap saat itu aku sudah menjadi orang<br>
+        yang layak untukmu.<br><br>
+        <em>— 나 진짜 진짜 사랑해 <br>I really really love you and i want you to be mine and mine only</em>
+      </p>
+      <div class="closing-jp">5 CENTIMETERS PER SECOND · UNTUK NANDITA DIVA ARDANI · パスルアン 2021—2026</div>
+    </div>
+  </section>
+
+  <!-- ================= [V6 S10 - APAPUN JAWABANMU] ================= -->
+  <section id="s10">
+    <div class="answer-wrap">
+      <span class="ans-kana fade">答え · apapun jawabanmu</span>
+
+      <div class="ans-question fade d1">"apakah kamu masih mau?"</div>
+
+      <div class="ans-blocks">
+
+        <div class="ans-block fade d1">
+          <div class="ans-block-num">satu</div>
+          <div class="ans-block-title">Aku tidak akan pergi lagi</div>
+          <div class="ans-block-body">Dulu aku selalu menunggu — menunggu kamu chat duluan, menunggu keadaan yang "tepat", menunggu ada motor, menunggu mami mengizinkan. Aku selalu punya alasan untuk diam. Kali ini aku yang bergerak. <em>Aku yang beli tiket. Aku yang berangkat.</em> Mungkin terlambat, tapi lebih baik terlambat daripada tidak pernah.</div>
+        </div>
+
+        <div class="ans-block fade d2">
+          <div class="ans-block-num">dua</div>
+          <div class="ans-block-title">Aku tidak butuh jawaban sekarang</div>
+          <div class="ans-block-body">Kamu pernah bilang: <em>"aku cuma gamau perasaanku ke kamu jadi penyakit."</em> Aku mendengarnya. Aku tidak ingin kamu memaksakan diri hanya karena merasa tidak enak, atau kasihan, atau karena website ini. Jawaban yang dipaksakan itu lebih menyakitkan. Yang aku minta hanya satu hal: <strong>Jika kamu sudah menemukan seseorang ataupun tidak ingin dengan aku, beri tahukan aku yaa, mohon bangett jangan untuk di ghosting</strong></div>
+        </div>
+
+        <div class="ans-block fade d2">
+          <div class="ans-block-num">tiga</div>
+          <div class="ans-block-title">Aku tahu kamu layak mendapat lebih</div>
+          <div class="ans-block-body">Kamu bilang ayahmu memberimu apa yang kamu mau tanpa kamu meminta — hanya dengan kode. Kamu ingin diperlakukan seperti itu. <em>Aku ingin belajar menjadi orang yang seperti itu.</em> Bukan karena aku sudah sempurna. Tapi karena untuk pertama kalinya, ada seseorang yang membuatku mau benar-benar berubah — dan itu kamu.</div>
+        </div>
+
+        <div class="ans-block fade d3">
+          <div class="ans-block-num">empat</div>
+          <div class="ans-block-title">Website ini bukan rayuan — ini dokumentasi</div>
+          <div class="ans-block-body">Aku tidak membuat ini untuk memanipulasi perasaanmu. Aku membuat ini karena ada cerita nyata di sini — yang layak dicatat dengan baik, bukan hanya dibiarkan menghilang di tumpukan chat. Setiap bagian di sini adalah hal yang benar-benar terjadi. <em>Perpustakaan itu nyata. Seblak itu nyata. Dairy Milk tengah malam itu nyata. Dan perasaan ini — juga nyata.</em></div>
+        </div>
+
+        <div class="ans-block fade d3">
+          <div class="ans-block-num">lima</div>
+          <div class="ans-block-title">Aku membangun ini semalam suntuk — dan aku tidak menyesal</div>
+          <div class="ans-block-body">HTML, CSS, JavaScript — aku tulis semuanya dari nol, malam ini, belum tidur. Bukan untuk pamer. Tapi karena aku ingin kamu tahu bahwa ada seseorang yang <em>meluangkan waktunya</em> untukmu — waktu yang seharusnya sudah kulakukan jauh lebih awal. Ini hanya permulaan dari sesuatu yang lebih panjang, kalau kamu mau.</div>
+        </div>
+
+      </div>
+
+      <div class="ans-promise fade d4">
+        <div class="ans-promise-text">
+          Aku tidak bisa menjanjikan sempurna.<br>
+          Tapi aku bisa berjanji bahwa <em>aku tidak akan lagi menjadi orang yang diam ketika seharusnya bergerak</em>,<br>
+          yang menunggu ketika seharusnya datang,<br>
+          yang membiarkan jarak menjadi alasan untuk tidak mencoba.<br><br>
+          Aku sudah memulai itu. <em>Malam ini. Hari ini. Sekarang.</em>
+        </div>
+      </div>
+
+      <div class="ans-final-row fade d5">
+        <div class="ans-sig">
+          — Nal
+          <span>yang membangun ini semalam suntuk · belum tidur · dan tidak menyesal</span>
+        </div>
+        <div class="ans-jp-big">また会える</div>
+      </div>
+
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>

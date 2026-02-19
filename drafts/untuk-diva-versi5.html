@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>秒速5センチメートル — Nal & Diva</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   ROOT & RESET
+============================================================ */
+:root {
+  --night:      #06060f;
+  --deep:       #0a0a1c;
+  --indigo:     #111128;
+  --sakura:     #e8a0b8;
+  --sakura-dim: rgba(232,160,184,0.15);
+  --sakura-glow:rgba(232,160,184,0.05);
+  --gold:       #c4a35a;
+  --gold-dim:   rgba(196,163,90,0.2);
+  --cream:      #f0ebe0;
+  --mist:       rgba(240,235,224,0.45);
+  --faint:      rgba(240,235,224,0.2);
+  --border:     rgba(232,160,184,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--night);
+  color:var(--cream);
+  font-family:'EB Garamond',serif;
+  overflow-x:hidden;
+  cursor:none;
+}
+::selection{background:var(--sakura-dim);color:var(--cream);}
+
+/* ============================================================
+   CUSTOM CURSOR
+============================================================ */
+#cur{
+  position:fixed;width:6px;height:6px;
+  background:var(--sakura);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  mix-blend-mode:screen;
+  transition:transform .08s;
+}
+#cur-ring{
+  position:fixed;width:28px;height:28px;
+  border:1px solid rgba(232,160,184,.3);border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:transform .14s ease;
+}
+
+/* ============================================================
+   SAKURA CANVAS
+============================================================ */
+#sakura-canvas{
+  position:fixed;inset:0;
+  pointer-events:none;z-index:1;
+  opacity:.7;
+}
+
+/* ============================================================
+   NOISE TEXTURE OVERLAY
+============================================================ */
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:2;opacity:.4;
+}
+
+/* ============================================================
+   SCROLL PROGRESS
+============================================================ */
+#progress{
+  position:fixed;top:0;left:0;
+  height:1px;width:0%;
+  background:linear-gradient(90deg,transparent,var(--sakura),var(--gold));
+  z-index:999;transition:width .1s linear;
+}
+
+/* ============================================================
+   HERO
+============================================================ */
+#hero{
+  position:relative;min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;z-index:3;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 65%, rgba(17,17,40,.95) 0%,transparent 70%),
+    radial-gradient(ellipse 100% 40% at 50% 100%, rgba(100,40,60,.25) 0%,transparent 60%),
+    linear-gradient(180deg,#040408 0%,#06060f 50%,#0a0a1c 100%);
+}
+.stars-layer{position:absolute;inset:0;overflow:hidden;}
+.star{
+  position:absolute;background:#fff;border-radius:50%;
+  animation:twinkle var(--d,3s) infinite ease-in-out var(--dl,0s);
+}
+@keyframes twinkle{
+  0%,100%{opacity:var(--mo,.15);transform:scale(1);}
+  50%{opacity:1;transform:scale(1.4);}
+}
+
+/* Train track */
+.track{
+  position:absolute;bottom:100px;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(196,163,90,.15) 20%,rgba(196,163,90,.4) 50%,rgba(196,163,90,.15) 80%,transparent 100%);
+}
+.track::before,.track::after{
+  content:'';position:absolute;top:-4px;width:1px;height:9px;
+  background:rgba(196,163,90,.3);
+}
+.track::before{left:25%;}
+.track::after{left:75%;}
+
+/* Moving train dot */
+.train-dot{
+  position:absolute;bottom:96px;width:4px;height:4px;
+  border-radius:50%;background:var(--gold);
+  box-shadow:0 0 10px var(--gold),0 0 20px rgba(196,163,90,.3);
+  animation:trainGo 12s linear infinite;
+}
+@keyframes trainGo{
+  0%{left:-10px;opacity:0;}
+  5%{opacity:1;}
+  95%{opacity:1;}
+  100%{left:calc(100% + 10px);opacity:0;}
+}
+
+.hero-content{position:relative;z-index:2;}
+.hero-kanji{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:clamp(10px,1.2vw,13px);letter-spacing:.7em;
+  color:rgba(232,160,184,.4);margin-bottom:2.5rem;
+  opacity:0;animation:riseIn 1.4s ease forwards .2s;
+}
+.hero-title{
+  font-family:'Shippori Mincho',serif;font-weight:400;
+  font-size:clamp(38px,6.5vw,90px);line-height:1;
+  letter-spacing:-.02em;
+  opacity:0;animation:riseIn 1.4s ease forwards .5s;
+}
+.hero-title span{
+  display:block;
+  font-family:'EB Garamond',serif;font-style:italic;font-weight:400;
+  font-size:.52em;color:var(--sakura);
+  letter-spacing:.06em;margin-top:.35em;
+}
+.hero-names{
+  margin-top:2.2rem;
+  font-family:'EB Garamond',serif;font-style:italic;font-weight:400;
+  font-size:clamp(15px,2vw,20px);color:var(--mist);
+  letter-spacing:.2em;
+  opacity:0;animation:riseIn 1.4s ease forwards .8s;
+}
+.hero-divider{
+  margin-top:3rem;display:flex;align-items:center;
+  gap:20px;
+  opacity:0;animation:riseIn 1.4s ease forwards 1.1s;
+}
+.hdl{width:50px;height:1px;background:linear-gradient(90deg,transparent,var(--sakura));}
+.hdr{width:50px;height:1px;background:linear-gradient(90deg,var(--sakura),transparent);}
+.hero-speed{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:10px;letter-spacing:.5em;color:rgba(232,160,184,.6);
+}
+.hero-scroll{
+  position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  opacity:0;animation:riseIn 1.4s ease forwards 1.5s;
+}
+.hero-scroll-text{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:9px;letter-spacing:.5em;color:var(--faint);
+}
+.scroll-line{
+  width:1px;height:44px;
+  background:linear-gradient(180deg,transparent,rgba(232,160,184,.4));
+  animation:scrollPulse 2.2s infinite;
+}
+@keyframes scrollPulse{
+  0%{transform:scaleY(0);transform-origin:top;opacity:0;}
+  50%{transform:scaleY(1);opacity:1;}
+  100%{transform:scaleY(1);transform-origin:bottom;opacity:0;}
+}
+
+@keyframes riseIn{
+  from{opacity:0;transform:translateY(28px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ============================================================
+   CHAPTER SYSTEM
+============================================================ */
+.chapter{
+  position:relative;z-index:3;
+  padding:140px 0;
+}
+.chapter:nth-child(even){
+  background:linear-gradient(180deg,transparent,rgba(10,10,28,.5),transparent);
+}
+.container{max-width:860px;margin:0 auto;padding:0 48px;}
+.container-wide{max-width:1100px;margin:0 auto;padding:0 48px;}
+
+/* Chapter header */
+.ch-header{
+  display:flex;align-items:center;gap:20px;
+  margin-bottom:80px;
+  opacity:0;transform:translateX(-24px);
+  transition:opacity .9s ease,transform .9s ease;
+}
+.ch-header.vis{opacity:1;transform:translateX(0);}
+.ch-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--sakura);
+  box-shadow:0 0 14px var(--sakura),0 0 28px rgba(232,160,184,.2);
+  flex-shrink:0;
+}
+.ch-num{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:10px;letter-spacing:.5em;color:rgba(232,160,184,.4);
+}
+.ch-title{
+  font-family:'Shippori Mincho',serif;font-size:clamp(11px,1.3vw,13px);
+  letter-spacing:.4em;color:rgba(240,235,224,.3);text-transform:uppercase;
+}
+.ch-line{
+  flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(196,163,90,.15),transparent);
+}
+
+/* Reveal class */
+.reveal{
+  opacity:0;transform:translateY(32px);
+  transition:opacity 1s ease,transform 1s ease;
+}
+.reveal.vis{opacity:1;transform:translateY(0);}
+.reveal-left{
+  opacity:0;transform:translateX(-32px);
+  transition:opacity 1s ease,transform 1s ease;
+}
+.reveal-left.vis{opacity:1;transform:translateX(0);}
+.reveal-right{
+  opacity:0;transform:translateX(32px);
+  transition:opacity 1s ease,transform 1s ease;
+}
+.reveal-right.vis{opacity:1;transform:translateX(0);}
+
+/* ============================================================
+   CHAPTER I — PERPUSTAKAAN
+============================================================ */
+.story-text{
+  font-family:'EB Garamond',serif;font-size:clamp(18px,2.5vw,24px);
+  font-weight:400;line-height:2;color:var(--cream);
+}
+.story-text em{color:var(--sakura);font-style:italic;}
+.story-text strong{color:var(--gold);font-weight:500;}
+
+.sub-text{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:clamp(14px,1.8vw,18px);line-height:2;
+  color:var(--mist);margin-top:28px;
+}
+
+.location-tag{
+  display:inline-flex;align-items:center;gap:10px;
+  margin-bottom:48px;
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:10px;letter-spacing:.5em;
+  color:rgba(196,163,90,.5);
+}
+.location-tag::before{
+  content:'📍';font-size:12px;opacity:.6;
+}
+
+/* Two-column story layout */
+.story-split{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:80px;align-items:start;
+}
+
+/* Pull quote */
+.pull-quote{
+  position:relative;
+  padding:48px 0 48px 48px;
+  margin:60px 0;
+}
+.pull-quote::before{
+  content:'\201C';
+  position:absolute;top:20px;left:0;
+  font-family:'EB Garamond',serif;font-size:100px;
+  line-height:1;color:rgba(232,160,184,.1);
+}
+.pull-quote-text{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(20px,3vw,30px);
+  line-height:1.7;color:var(--cream);
+}
+.pull-quote-attr{
+  margin-top:20px;font-family:'Noto Serif JP',serif;
+  font-weight:200;font-size:11px;letter-spacing:.4em;
+  color:rgba(232,160,184,.4);
+}
+
+/* ============================================================
+   CHAPTER II — MOMEN KECIL (Cards)
+============================================================ */
+.moments-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:2px;
+}
+.moment-card{
+  padding:48px 40px;
+  background:rgba(255,255,255,.015);
+  border:1px solid var(--border);
+  position:relative;overflow:hidden;
+  transition:background .4s ease;
+}
+.moment-card:hover{background:rgba(232,160,184,.025);}
+.moment-card::after{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--border),transparent);
+}
+.mc-icon{
+  font-size:28px;margin-bottom:24px;
+  display:block;opacity:.7;
+}
+.mc-title{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(16px,2vw,20px);
+  color:var(--cream);margin-bottom:16px;
+  line-height:1.3;
+}
+.mc-body{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:clamp(13px,1.6vw,16px);
+  color:var(--mist);line-height:1.9;
+}
+.mc-jp{
+  margin-top:20px;font-family:'Noto Serif JP',serif;
+  font-weight:200;font-size:10px;letter-spacing:.4em;
+  color:rgba(196,163,90,.35);
+}
+
+/* ============================================================
+   CHAPTER III — JARAK
+============================================================ */
+.distance-hero{
+  text-align:center;padding:60px 0;
+}
+.distance-big{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(70px,14vw,160px);
+  font-weight:600;line-height:1;
+  color:transparent;
+  -webkit-text-stroke:1px rgba(232,160,184,.12);
+  position:relative;display:inline-block;
+}
+.distance-big span{
+  position:absolute;inset:0;
+  -webkit-text-stroke:0;
+  background:linear-gradient(135deg,var(--sakura) 0%,var(--gold) 50%,var(--sakura) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  clip-path:inset(0 100% 0 0);
+  transition:clip-path 2.5s cubic-bezier(.4,0,.2,1) .5s;
+}
+.distance-big.vis span{clip-path:inset(0 0% 0 0);}
+.distance-unit{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:12px;letter-spacing:.5em;color:var(--faint);
+  margin-top:12px;
+}
+
+/* Route map */
+.route{
+  display:flex;align-items:center;
+  justify-content:center;gap:0;
+  margin:70px auto;max-width:700px;
+  flex-wrap:wrap;gap:0;
+}
+.route-stop{text-align:center;min-width:120px;}
+.route-city{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(16px,2.5vw,24px);
+  color:var(--cream);margin-bottom:6px;
+}
+.route-jp{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:10px;letter-spacing:.3em;color:rgba(232,160,184,.4);
+  margin-bottom:4px;
+}
+.route-note{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:12px;color:var(--faint);
+}
+.route-track{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;gap:6px;padding:0 16px;
+  position:relative;
+  min-width:80px;
+}
+.rt-line{
+  width:100%;height:1px;
+  background:linear-gradient(90deg,rgba(196,163,90,.1),rgba(196,163,90,.5),rgba(196,163,90,.1));
+  position:relative;
+}
+.rt-train{
+  position:absolute;top:-3px;width:6px;height:6px;
+  border-radius:50%;background:var(--gold);
+  box-shadow:0 0 8px var(--gold);
+  animation:trainSlide var(--speed,5s) linear infinite;
+}
+@keyframes trainSlide{
+  0%{left:0;opacity:0;}8%{opacity:1;}92%{opacity:1;}100%{left:calc(100% - 6px);opacity:0;}
+}
+.rt-time{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:9px;letter-spacing:.3em;color:rgba(196,163,90,.35);
+}
+
+/* Train info cards */
+.train-cards{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:2px;margin-top:60px;
+}
+.train-card{
+  padding:36px;background:rgba(255,255,255,.012);
+  border:1px solid var(--border);
+}
+.tc-label{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:9px;letter-spacing:.5em;color:rgba(196,163,90,.4);
+  margin-bottom:16px;
+}
+.tc-name{
+  font-family:'Shippori Mincho',serif;font-size:18px;
+  color:var(--cream);margin-bottom:8px;
+}
+.tc-time{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:30px;color:var(--gold);opacity:.7;
+}
+.tc-note{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:14px;color:var(--mist);margin-top:12px;
+  line-height:1.6;
+}
+
+/* ============================================================
+   CHAPTER IV — 50.000 MENIT
+============================================================ */
+.fifty-counter{
+  text-align:center;padding:40px 0;
+}
+.fifty-num{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(48px,9vw,110px);
+  color:var(--gold);opacity:.8;line-height:1;
+  position:relative;display:inline-block;
+}
+.fifty-suffix{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:.3em;color:var(--mist);vertical-align:bottom;
+  padding-bottom:.15em;margin-left:.2em;
+}
+.fifty-label{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:11px;letter-spacing:.5em;color:var(--faint);
+  margin-top:12px;
+}
+
+.song-card{
+  display:flex;align-items:center;gap:40px;
+  padding:48px;background:rgba(255,255,255,.012);
+  border:1px solid var(--border);margin:60px 0;
+  position:relative;overflow:hidden;
+}
+.song-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at left center,rgba(232,160,184,.04),transparent 60%);
+}
+.song-icon{font-size:48px;flex-shrink:0;opacity:.7;}
+.song-text{}
+.song-title{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(18px,2.5vw,26px);color:var(--cream);
+  margin-bottom:10px;
+}
+.song-artist{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:11px;letter-spacing:.4em;color:rgba(232,160,184,.4);
+  margin-bottom:20px;
+}
+.song-body{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:clamp(14px,1.7vw,17px);color:var(--mist);
+  line-height:1.9;
+}
+
+/* Wallpaper info */
+.wallpaper-row{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:2px;margin-top:60px;
+}
+.wp-item{
+  padding:36px 30px;
+  background:rgba(255,255,255,.012);
+  border:1px solid var(--border);text-align:center;
+}
+.wp-icon{font-size:32px;margin-bottom:20px;display:block;opacity:.6;}
+.wp-label{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:10px;letter-spacing:.4em;color:rgba(196,163,90,.4);
+  margin-bottom:14px;
+}
+.wp-text{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:clamp(13px,1.5vw,16px);color:var(--mist);
+  line-height:1.7;
+}
+
+/* ============================================================
+   CHAPTER V — JUJUR
+============================================================ */
+.confession-box{
+  border-left:1px solid rgba(232,160,184,.15);
+  padding:0 0 0 48px;margin:60px 0;
+}
+.confession-item{
+  margin-bottom:60px;
+  opacity:0;transform:translateX(-20px);
+  transition:opacity 1s ease,transform 1s ease;
+}
+.confession-item.vis{opacity:1;transform:translateX(0);}
+.ci-num{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:10px;letter-spacing:.4em;
+  color:rgba(232,160,184,.3);margin-bottom:16px;
+}
+.ci-heading{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(16px,2vw,22px);
+  color:var(--cream);margin-bottom:14px;
+}
+.ci-body{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:clamp(14px,1.7vw,17px);
+  color:var(--mist);line-height:2;
+}
+
+/* ============================================================
+   CHAPTER VI — MINI BOOK
+============================================================ */
+.minibook-card{
+  padding:80px;
+  background:rgba(232,160,184,.025);
+  border:1px solid rgba(232,160,184,.1);
+  position:relative;text-align:center;
+}
+.minibook-card::before{
+  content:'';position:absolute;
+  top:-1px;left:80px;width:60px;height:1px;
+  background:var(--sakura);opacity:.4;
+}
+.minibook-card::after{
+  content:'';position:absolute;
+  bottom:-1px;right:80px;width:60px;height:1px;
+  background:var(--gold);opacity:.3;
+}
+.mb-icon{font-size:60px;display:block;margin-bottom:32px;opacity:.7;}
+.mb-quote{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:clamp(18px,2.5vw,26px);
+  color:var(--cream);line-height:1.8;margin-bottom:20px;
+}
+.mb-attr{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:10px;letter-spacing:.5em;color:rgba(232,160,184,.4);
+}
+
+/* ============================================================
+   CHAPTER VII — GUBENG 18:50
+============================================================ */
+.plan-timeline{
+  position:relative;padding-left:40px;
+}
+.plan-timeline::before{
+  content:'';position:absolute;
+  left:6px;top:0;bottom:0;width:1px;
+  background:linear-gradient(180deg,var(--sakura-dim),rgba(196,163,90,.1),transparent);
+}
+.plan-step{
+  position:relative;margin-bottom:56px;
+  opacity:0;transform:translateY(20px);
+  transition:opacity .9s ease,transform .9s ease;
+}
+.plan-step.vis{opacity:1;transform:translateY(0);}
+.ps-dot{
+  position:absolute;left:-37px;top:4px;
+  width:8px;height:8px;border-radius:50%;
+  border:1px solid var(--sakura);
+  background:var(--night);
+  box-shadow:0 0 10px rgba(232,160,184,.25);
+}
+.ps-time{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:10px;letter-spacing:.4em;
+  color:rgba(232,160,184,.4);margin-bottom:10px;
+}
+.ps-title{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(17px,2.2vw,23px);
+  color:var(--cream);margin-bottom:10px;
+}
+.ps-body{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:clamp(14px,1.6vw,17px);
+  color:var(--mist);line-height:2;
+}
+
+/* Station countdown */
+.station-countdown{
+  padding:60px;
+  background:rgba(10,10,28,.7);
+  border:1px solid var(--border);
+  text-align:center;margin-top:60px;
+  position:relative;overflow:hidden;
+}
+.station-countdown::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at center bottom,rgba(232,160,184,.04),transparent 70%);
+}
+.sc-label{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:10px;letter-spacing:.6em;
+  color:rgba(196,163,90,.4);margin-bottom:24px;
+}
+.sc-train{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(28px,5vw,56px);
+  color:var(--cream);margin-bottom:8px;
+}
+.sc-time{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:clamp(40px,8vw,90px);
+  color:var(--gold);opacity:.7;line-height:1;
+}
+.sc-note{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:clamp(14px,1.7vw,18px);
+  color:var(--mist);margin-top:20px;line-height:1.8;
+}
+
+/* ============================================================
+   SURAT
+============================================================ */
+#surat{
+  min-height:100vh;display:flex;align-items:center;
+  padding:120px 0;
+}
+.letter-wrap{
+  padding:100px 80px;
+  background:rgba(8,8,20,.8);
+  border:1px solid rgba(232,160,184,.07);
+  backdrop-filter:blur(10px);
+  position:relative;
+}
+.letter-wrap::before{
+  content:'';position:absolute;top:-1px;left:80px;
+  width:100px;height:1px;background:var(--sakura);opacity:.3;
+}
+.letter-top{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:10px;letter-spacing:.6em;
+  color:rgba(232,160,184,.35);margin-bottom:60px;
+}
+.letter-salut{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(24px,3.5vw,38px);
+  color:var(--cream);margin-bottom:48px;line-height:1.5;
+}
+.letter-salut em{color:var(--sakura);font-style:italic;}
+.letter-p{
+  font-family:'EB Garamond',serif;font-size:clamp(16px,2vw,21px);
+  line-height:2.1;color:var(--mist);margin-bottom:36px;
+  font-style:italic;
+}
+.letter-p strong{color:var(--cream);font-style:normal;font-weight:400;}
+.letter-p em{color:var(--sakura);}
+.letter-close{
+  margin-top:72px;display:flex;
+  flex-direction:column;align-items:flex-end;gap:10px;
+}
+.lc-line{width:100px;height:1px;background:rgba(196,163,90,.2);}
+.lc-name{
+  font-family:'Shippori Mincho',serif;
+  font-size:24px;color:var(--gold);opacity:.6;
+}
+.lc-date{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:10px;letter-spacing:.4em;color:var(--faint);
+}
+
+/* ============================================================
+   INTERACTIVE — DO'A
+============================================================ */
+#doa{padding:160px 0;text-align:center;}
+.doa-label{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:11px;letter-spacing:.6em;
+  color:rgba(232,160,184,.35);margin-bottom:70px;
+}
+.doa-form{max-width:480px;margin:0 auto;}
+.doa-input{
+  width:100%;background:transparent;
+  border:none;border-bottom:1px solid rgba(232,160,184,.15);
+  padding:18px 0;font-family:'EB Garamond',serif;
+  font-style:italic;font-size:20px;color:var(--cream);
+  text-align:center;outline:none;
+  letter-spacing:.05em;
+  transition:border-color .3s;
+}
+.doa-input::placeholder{color:rgba(240,235,224,.15);}
+.doa-input:focus{border-bottom-color:rgba(232,160,184,.5);}
+.doa-btn{
+  background:transparent;
+  border:1px solid rgba(232,160,184,.2);
+  color:rgba(232,160,184,.7);
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:10px;letter-spacing:.5em;
+  padding:16px 48px;cursor:pointer;
+  margin-top:32px;transition:all .3s;
+}
+.doa-btn:hover{
+  background:rgba(232,160,184,.06);
+  border-color:rgba(232,160,184,.5);color:var(--sakura);
+  box-shadow:0 0 24px rgba(232,160,184,.08);
+}
+.doa-output{
+  margin-top:80px;min-height:60px;
+  display:flex;flex-wrap:wrap;
+  justify-content:center;gap:20px 32px;
+}
+.doa-petal{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:16px;color:rgba(232,160,184,.55);
+  animation:floatPetal 7s ease-in-out infinite;
+  animation-delay:var(--dd,0s);
+}
+@keyframes floatPetal{
+  0%,100%{transform:translateY(0) rotate(-3deg);opacity:.55;}
+  50%{transform:translateY(-14px) rotate(3deg);opacity:.85;}
+}
+
+/* ============================================================
+   CLOSING
+============================================================ */
+#closing{
+  min-height:80vh;display:flex;
+  align-items:center;justify-content:center;
+  text-align:center;position:relative;z-index:3;
+  padding:120px 0;
+}
+.closing-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 80%,rgba(100,40,60,.12),transparent 60%);
+}
+.closing-inner{position:relative;}
+.closing-kanji{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:clamp(60px,12vw,120px);
+  color:transparent;
+  -webkit-text-stroke:1px rgba(232,160,184,.08);
+  letter-spacing:.5em;display:block;margin-bottom:48px;
+}
+.closing-main{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(20px,3.5vw,36px);
+  color:rgba(240,235,224,.5);line-height:1.7;
+  max-width:620px;margin:0 auto 60px;
+}
+.closing-main em{color:var(--sakura);}
+.closing-jp{
+  font-family:'Noto Serif JP',serif;font-weight:200;
+  font-size:10px;letter-spacing:.7em;
+  color:rgba(196,163,90,.3);
+}
+
+/* ============================================================
+   HORIZONTAL RULE — SECTION DIVIDER
+============================================================ */
+.sec-divider{
+  display:flex;align-items:center;gap:28px;
+  margin:0 48px;opacity:0;
+  transition:opacity 1.2s ease;
+}
+.sec-divider.vis{opacity:1;}
+.sd-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(196,163,90,.1));}
+.sd-line.r{background:linear-gradient(90deg,rgba(196,163,90,.1),transparent);}
+.sd-char{
+  font-family:'Noto Serif JP',serif;font-size:16px;
+  color:rgba(196,163,90,.2);letter-spacing:.3em;
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media(max-width:700px){
+  .container,.container-wide{padding:0 24px;}
+  .story-split{grid-template-columns:1fr;gap:40px;}
+  .moments-grid{grid-template-columns:1fr;}
+  .train-cards{grid-template-columns:1fr;}
+  .wallpaper-row{grid-template-columns:1fr;}
+  .song-card{flex-direction:column;gap:24px;}
+  .letter-wrap{padding:48px 28px;}
+  .minibook-card{padding:48px 28px;}
+  .confession-box{padding-left:28px;}
+  .route{gap:16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- Sakura canvas -->
+<canvas id="sakura-canvas"></canvas>
+
+<!-- Scroll progress -->
+<div id="progress"></div>
+
+<!-- ========================================================
+     HERO
+======================================================== -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="stars-layer" id="stars"></div>
+  <div class="track"></div>
+  <div class="train-dot"></div>
+
+  <div class="hero-content">
+    <p class="hero-kanji">秒速5センチメートル &nbsp;·&nbsp; ごせんちめーとる &nbsp;·&nbsp; SMA Negeri 1 Pasuruan</p>
+    <h1 class="hero-title">
+      Nal &amp; Diva
+      <span>sebuah cerita yang belum selesai</span>
+    </h1>
+    <p class="hero-names">Pasuruan &nbsp;—&nbsp; Surabaya &nbsp;—&nbsp; Bandung</p>
+    <div class="hero-divider">
+      <div class="hdl"></div>
+      <span class="hero-speed">5 cm / detik &nbsp;·&nbsp; kecepatan bunga sakura jatuh &nbsp;·&nbsp; dan dua hati yang terpisah jarak</span>
+      <div class="hdr"></div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <span class="hero-scroll-text">MULAI</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="sec-divider reveal"><div class="sd-line"></div><span class="sd-char">一</span><div class="sd-line r"></div></div>
+
+
+<!-- ========================================================
+     CHAPTER I — PERPUSTAKAAN
+======================================================== -->
+<section class="chapter" id="ch1">
+  <div class="container">
+    <div class="ch-header">
+      <div class="ch-dot"></div>
+      <span class="ch-num">01</span>
+      <span class="ch-title">Asal Mula &nbsp;·&nbsp; 始まり</span>
+      <div class="ch-line"></div>
+    </div>
+
+    <div class="location-tag reveal">SMA Negeri 1 Pasuruan &nbsp;·&nbsp; Program Akselerasi</div>
+
+    <div class="story-text reveal">
+      Dulu, aku adalah orang yang <em>benar-benar sendiri.</em><br>
+      Waktu istirahat, aku sembunyi di belakang ruangan yang tidak ada orang.<br>
+      Tidak pernah ngobrol, tidak pernah melihat ke arah siapapun.<br>
+      <strong>Termasuk kamu.</strong>
+    </div>
+
+    <div class="sub-text reveal" style="transition-delay:.2s;">
+      Sampai program akselerasi itu menempatkan kita di kelas yang sama untuk kedua kalinya —
+      dan entah kenapa, dari sekian banyak tempat yang bisa kamu tuju saat teman-temanmu pergi ke tempat lain,
+      kamu memilih untuk ikut ke <em>perpustakaan.</em>
+    </div>
+
+    <div class="pull-quote reveal" style="transition-delay:.35s;">
+      <div class="pull-quote-text">
+        Hari itu — seblak di pertigaan dekat perpustakaan, makan berdua,<br>
+        untuk pertama kalinya dalam hidupku aku beneran ngobrol dengan cewek<br>
+        dan duduk makan di luar berdua.<br>
+        <span style="color:var(--sakura);">Dari situ semuanya menjadi aneh, dan sangat tidak bisa dijelaskan.</span>
+      </div>
+      <div class="pull-quote-attr">Kenangan pertama &nbsp;·&nbsp; 最初の記憶</div>
+    </div>
+
+    <div class="sub-text reveal" style="transition-delay:.5s;">
+      Malem-malem pergi ke Indomaret. Bingung mau beli coklat apa. Akhirnya pilih <em>Dairy Milk</em> —
+      karena lebih mahal, jadi aku kira pasti lebih enak. Nyari sampai tiga kali.
+      Sebodoh itu, setulusnya itu, selugunya itu.<br><br>
+      Lalu ada blokir-blokiran, ada pertengkaran, ada baikan.
+      Kamu pernah bilang <em>"jangan blokir dia"</em> — dan kata-kata itu ternyata aku ingat sampai sekarang.
+    </div>
+  </div>
+</section>
+
+<div class="sec-divider reveal"><div class="sd-line"></div><span class="sd-char">二</span><div class="sd-line r"></div></div>
+
+
+<!-- ========================================================
+     CHAPTER II — MOMEN KECIL
+======================================================== -->
+<section class="chapter" id="ch2">
+  <div class="container">
+    <div class="ch-header">
+      <div class="ch-dot"></div>
+      <span class="ch-num">02</span>
+      <span class="ch-title">Momen Kecil yang Tidak Kecil &nbsp;·&nbsp; 小さなこと</span>
+      <div class="ch-line"></div>
+    </div>
+
+    <div class="moments-grid">
+      <div class="moment-card reveal" style="transition-delay:.0s;">
+        <span class="mc-icon">📚</span>
+        <div class="mc-title">Perpustakaan SMA N 1 Pasuruan</div>
+        <div class="mc-body">Kamu memilih duduk di sebelahku sementara semua temanmu pergi ke tempat lain. Aku tidak pernah tahu kenapa. Tapi itu yang mengubah segalanya.</div>
+        <div class="mc-jp">図書館 &nbsp;·&nbsp; Semester 2 Akselerasi</div>
+      </div>
+
+      <div class="moment-card reveal" style="transition-delay:.1s;">
+        <span class="mc-icon">🍫</span>
+        <div class="mc-title">Dairy Milk Tengah Malam</div>
+        <div class="mc-body">Memilih yang paling mahal karena aku tidak tahu coklat apa yang enak. Nyari sampai tiga kali. Silly things — tapi itu pertama kalinya aku pernah mau melakukan sesuatu untuk seseorang.</div>
+        <div class="mc-jp">深夜のチョコレート &nbsp;·&nbsp; Indomaret</div>
+      </div>
+
+      <div class="moment-card reveal" style="transition-delay:.2s;">
+        <span class="mc-icon">☎️</span>
+        <div class="mc-title">Sleep Call 7 Jam</div>
+        <div class="mc-body">HP tidak pernah dimatikan. Dari malam sampai pagi. Dua orang yang sebenarnya sedang tertidur di ujung telepon yang sama — sejauh ratusan kilometer, tapi terasa seperti satu ruangan.</div>
+        <div class="mc-jp">深夜通話 &nbsp;·&nbsp; Semester 3-4</div>
+      </div>
+
+      <div class="moment-card reveal" style="transition-delay:.3s;">
+        <span class="mc-icon">🎮</span>
+        <div class="mc-title">Main Game di Discord</div>
+        <div class="mc-body">Telkom University Bandung dan Poltekkes Surabaya — dua kota berbeda, satu Discord server. Itu adalah versi LDR yang paling dekat yang bisa kami temukan.</div>
+        <div class="mc-jp">Discord &nbsp;·&nbsp; Semester 5 最高の時期</div>
+      </div>
+
+      <div class="moment-card reveal" style="transition-delay:.4s;">
+        <span class="mc-icon">🌸</span>
+        <div class="mc-title">Nonton 5cm/s Berdua</div>
+        <div class="mc-body">Takaki dan Akari. Jarak yang tidak pernah bisa dijembatani kata-kata. Kami nonton bersama — dan mungkin keduanya tahu ini bukan hanya tentang anime itu.</div>
+        <div class="mc-jp">秒速5センチメートル &nbsp;·&nbsp; Anime Together</div>
+      </div>
+
+      <div class="moment-card reveal" style="transition-delay:.5s;">
+        <span class="mc-icon">💬</span>
+        <div class="mc-title">"I always loved you"</div>
+        <div class="mc-body">Tiga kata yang pernah kamu kirimkan. Yang aku jadikan wallpaper. Yang bahkan setelah semua yang terjadi, masih terasa seperti hal paling berharga yang pernah aku terima.</div>
+        <div class="mc-jp">ずっと愛してた &nbsp;·&nbsp; Wallpaper</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sec-divider reveal"><div class="sd-line"></div><span class="sd-char">三</span><div class="sd-line r"></div></div>
+
+
+<!-- ========================================================
+     CHAPTER III — JARAK
+======================================================== -->
+<section class="chapter" id="ch3">
+  <div class="container">
+    <div class="ch-header">
+      <div class="ch-dot"></div>
+      <span class="ch-num">03</span>
+      <span class="ch-title">Jarak &nbsp;·&nbsp; 距離</span>
+      <div class="ch-line"></div>
+    </div>
+
+    <div class="distance-hero reveal">
+      <div class="distance-big">
+        792<span>792</span>
+      </div>
+      <div class="distance-unit">kilometer · yang tidak pernah terasa sebentar</div>
+    </div>
+
+    <div class="route reveal" style="transition-delay:.3s;">
+      <div class="route-stop">
+        <div class="route-city">Pasuruan</div>
+        <div class="route-jp">パスルアン</div>
+        <div class="route-note">rumahku</div>
+      </div>
+      <div class="route-track" style="--speed:5s;">
+        <div class="rt-line"><div class="rt-train"></div></div>
+        <div class="rt-time">~1.5 jam · Kereta Lokal</div>
+      </div>
+      <div class="route-stop">
+        <div class="route-city">Surabaya</div>
+        <div class="route-jp">スラバヤ</div>
+        <div class="route-note">di sinilah kamu</div>
+      </div>
+      <div class="route-track" style="--speed:8s;">
+        <div class="rt-line"><div class="rt-train" style="animation-delay:3s;"></div></div>
+        <div class="rt-time">~8 jam · Ke Bandung</div>
+      </div>
+      <div class="route-stop">
+        <div class="route-city">Bandung</div>
+        <div class="route-jp">バンドゥン</div>
+        <div class="route-note">Telkom Univ.</div>
+      </div>
+    </div>
+
+    <div class="train-cards reveal" style="transition-delay:.5s;">
+      <div class="train-card">
+        <div class="tc-label">BERANGKAT · PASURUAN → GUBENG</div>
+        <div class="tc-name">Kereta Lokal Pasuruan</div>
+        <div class="tc-time">14:55</div>
+        <div class="tc-note">Tiba Gubeng sekitar 17:20 — masih ada waktu, setidaknya itu yang aku yakini. Pertama kali datang ke Surabaya sengaja untuk satu tujuan: mencarimu.</div>
+      </div>
+      <div class="train-card">
+        <div class="tc-label">BERANGKAT · PASAR TURI → BANDUNG</div>
+        <div class="tc-name">Harina (diganti dari Mutiara Selatan)</div>
+        <div class="tc-time">05:55</div>
+        <div class="tc-note">Aku mengganti tiket agar punya lebih banyak waktu di Surabaya. Dari pukul 17:20 hingga 5:55 pagi — semua itu untukmu, kalau kamu mau.</div>
+      </div>
+    </div>
+
+    <div class="story-text reveal" style="margin-top:60px;transition-delay:.6s;">
+      Hampir 3 sampai 4 tahun kami tidak pernah bertemu tatap muka.
+      Tidak pernah video call sekalipun. Hanya suara, teks, dan layar yang bercahaya di tengah malam.
+      <br><br>
+      <em>Dan entah kenapa itu tetap terasa cukup — sekaligus tidak pernah benar-benar cukup.</em>
+    </div>
+  </div>
+</section>
+
+<div class="sec-divider reveal"><div class="sd-line"></div><span class="sd-char">四</span><div class="sd-line r"></div></div>
+
+
+<!-- ========================================================
+     CHAPTER IV — 50.000 MENIT
+======================================================== -->
+<section class="chapter" id="ch4">
+  <div class="container">
+    <div class="ch-header">
+      <div class="ch-dot"></div>
+      <span class="ch-num">04</span>
+      <span class="ch-title">50.000 Menit &nbsp;·&nbsp; 五万分</span>
+      <div class="ch-line"></div>
+    </div>
+
+    <div class="fifty-counter reveal">
+      <div class="fifty-num">50.000<span class="fifty-suffix">menit</span></div>
+      <div class="fifty-label">memutar lagu yang sama &nbsp;·&nbsp; karena tidak ada cara lain mengatakannya</div>
+    </div>
+
+    <div class="song-card reveal" style="transition-delay:.2s;">
+      <div class="song-icon">🎵</div>
+      <div class="song-text">
+        <div class="song-title">One More Time, One More Chance</div>
+        <div class="song-artist">山崎まさよし &nbsp;·&nbsp; Yamazaki Masayoshi &nbsp;·&nbsp; 秒速5センチメートル OST</div>
+        <div class="song-body">
+          Aku memutar lagu ini sampai 50.000 menit. Di bioskop waktu nonton ulang 5cm/s, aku menangis hampir enam kali dalam satu hari.
+          Bulan pertama dan kedua setelah semua yang terjadi, aku menangis sendirian di kamar setiap malam.
+          Kemudian bulan ketiga dan keempat — kambuh lagi setelah nonton ulang filmnya.<br><br>
+          Ada scene Takaki dan Akari yang bertemu di stasiun kereta malam hari setelah delay dari jam 19:00 menjadi jam 23:00 —
+          <em>itu scene yang tidak bisa aku lewati tanpa menangis.</em>
+        </div>
+      </div>
+    </div>
+
+    <div class="wallpaper-row reveal" style="transition-delay:.4s;">
+      <div class="wp-item">
+        <span class="wp-icon">💻</span>
+        <div class="wp-label">WALLPAPER LAPTOP</div>
+        <div class="wp-text">Akari sendirian di stasiun, menunggu dalam diam — itu yang aku lihat setiap kali membuka laptop.</div>
+      </div>
+      <div class="wp-item">
+        <span class="wp-icon">📱</span>
+        <div class="wp-label">HOME SCREEN HP</div>
+        <div class="wp-text">Mereka berdua berda pelukan di bawah pohon sakura malam hari — gambaran dari apa yang aku inginkan.</div>
+      </div>
+      <div class="wp-item">
+        <span class="wp-icon">🔒</span>
+        <div class="wp-label">LOCK SCREEN HP</div>
+        <div class="wp-text">"To be able to see you again" dalam tulisan Jepang — diambil dari trailer film. Kalimat itu aku bawa setiap hari.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sec-divider reveal"><div class="sd-line"></div><span class="sd-char">五</span><div class="sd-line r"></div></div>
+
+
+<!-- ========================================================
+     CHAPTER V — JUJUR
+======================================================== -->
+<section class="chapter" id="ch5">
+  <div class="container">
+    <div class="ch-header">
+      <div class="ch-dot"></div>
+      <span class="ch-num">05</span>
+      <span class="ch-title">Yang Pernah Salah &nbsp;·&nbsp; 過ち</span>
+      <div class="ch-line"></div>
+    </div>
+
+    <div class="story-text reveal">
+      Ini bagian yang paling sulit untuk ditulis —<br>
+      tapi justru karena itu, ia harus ada di sini.
+    </div>
+
+    <div class="confession-box">
+
+      <div class="confession-item">
+        <div class="ci-num">kesalahan pertama</div>
+        <div class="ci-heading">Abil, September 2025</div>
+        <div class="ci-body">
+          Setelah lebih dari 1,5 tahun tidak pernah pergi berdua dengan cewek lain karena aku tahu kamu tidak suka —
+          aku jemput Abil, pergi ke mal, dan main game berdua. Aku tidak suka dia, tidak ada rasa apa-apa ke dia.
+          Tapi aku tetap pergi. Setiap detiknya aku memikirkanmu, membayangkan bagaimana reaksimu.
+          <em>Sisi burukku yang menang waktu itu.</em> Itu adalah pengkhianatanku, dan aku tidak mencari alasan untuk itu.
+        </div>
+      </div>
+
+      <div class="confession-item" style="transition-delay:.15s;">
+        <div class="ci-num">kesalahan kedua</div>
+        <div class="ci-heading">Cewek Uzbekistan</div>
+        <div class="ci-body">
+          Aku memuji cewek Uzbek itu "cantik banget" di depanmu. Lalu bilang masih intens chat-an di Telegram.
+          Kamu yang sedang kelelahan menghadapi perkuliahan — aku bukannya menjadi sandaranmu, tapi malah menambah beban.
+          <em>Cewek mana yang tidak merasa minder?</em> Kamu benar. Aku sungguh tidak memikirkan perasaanmu.
+        </div>
+      </div>
+
+      <div class="confession-item" style="transition-delay:.3s;">
+        <div class="ci-num">kesalahan ketiga</div>
+        <div class="ci-heading">Tidak Pernah Usaha Datang</div>
+        <div class="ci-body">
+          Kamu mau menjemputku. Aku bilang tetap tidak bisa — mami tidak mengizinkan, akan curiga.
+          Padahal kamu sendiri punya orang tua yang ketat, tapi kamu mencari cara, kamu coba negosiasi, kamu berani.
+          Aku tidak pernah melakukan itu. Tidak pernah sekalipun mencoba bicara pelan-pelan ke orang tuaku.
+          <em>Itu bukan karena tidak bisa. Itu karena aku tidak cukup berani untuk kamu.</em>
+          Temanmu yang di Jogja — jarak yang sama, baru kenal setahun — sudah pergi traveling bersama ke Surabaya.
+          Aku belum sekali pun menginjakkan kaki ke Poltekkes-mu, padahal sudah hampir 4 tahun.
+        </div>
+      </div>
+
+      <div class="confession-item" style="transition-delay:.45s;">
+        <div class="ci-num">kesalahan keempat</div>
+        <div class="ci-heading">Cewek SD yang Kughosting</div>
+        <div class="ci-body">
+          Ini yang paling tidak bisa aku maafkan dari diriku sendiri. Aku menerimanya waktu itu — bukan karena ada rasa,
+          tapi karena aku pikir bisa membantuku melupakan kamu. Ternyata tidak. Dan cara aku mengakhirinya:
+          <em>tanpa kata-kata, tanpa kabar, menghilang begitu saja.</em> Cara yang paling pengecut.
+          Aku tidak akan mengulangi kesalahan itu.
+        </div>
+      </div>
+
+      <div class="confession-item" style="transition-delay:.6s;">
+        <div class="ci-num">kesalahan kelima</div>
+        <div class="ci-heading">Tidak Pernah Mendefinisikan Kita</div>
+        <div class="ci-body">
+          Kamu bilang komitmen sudah cukup — dan aku menerima itu tanpa pernah mengambil inisiatif untuk mendefinisikan kita secara jelas.
+          HTS? Pacar? Teman? Kamu tidak seharusnya menjawab itu sendiri.
+          <em>Aku yang seharusnya menjawab itu dengan tindakan, bukan dengan diam.</em>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="sec-divider reveal"><div class="sd-line"></div><span class="sd-char">六</span><div class="sd-line r"></div></div>
+
+
+<!-- ========================================================
+     CHAPTER VI — MINI BOOK & HUJAN
+======================================================== -->
+<section class="chapter" id="ch6">
+  <div class="container">
+    <div class="ch-header">
+      <div class="ch-dot"></div>
+      <span class="ch-num">06</span>
+      <span class="ch-title">Mini Book &amp; Hujan di Surabaya &nbsp;·&nbsp; 再会</span>
+      <div class="ch-line"></div>
+    </div>
+
+    <div class="story-text reveal">
+      10 Februari 2026. Hujan deras di Surabaya — <em>petir tidak berhenti.</em><br>
+      Kamu menelepon semua temanmu. Tidak ada yang angkat.<br>
+      Lalu kamu menghubungi aku.
+    </div>
+
+    <div class="sub-text reveal" style="transition-delay:.2s;">
+      Aku sedang baru saja habis bertengkar besar dengan keluarga. Tapi ketika nama kamu muncul di layar —
+      semuanya tiba-tiba tenang. Aku jadi agak senang, karena aku kira kamu sudah melupakan aku, atau tidak mau bicara lagi.
+      <br><br>
+      Lalu 00:46 dini hari, 11 Februari — kamu mengirimkan <em>link heyzine.</em> Sebuah mini book.
+    </div>
+
+    <div class="minibook-card reveal" style="transition-delay:.4s;">
+      <span class="mb-icon">📖</span>
+      <div class="mb-quote">
+        "I may not have much to give,<br>
+        but I hope this mini book brings<br>
+        a small smile to u."
+      </div>
+      <div class="mb-attr">— Diva &nbsp;·&nbsp; 11 Feb 2026 &nbsp;·&nbsp; 00:49</div>
+    </div>
+
+    <div class="pull-quote reveal" style="transition-delay:.6s;margin-top:60px;">
+      <div class="pull-quote-text">
+        "karna ternyata perasaanku ke kmu gabisa ilang gitu aja,<br>
+        semakin aku pendem semakin aku sendiri yg sakit-sakitan."
+      </div>
+      <div class="pull-quote-attr">— Diva &nbsp;·&nbsp; 11 Feb 2026 &nbsp;·&nbsp; 14:32</div>
+    </div>
+
+    <div class="story-text reveal" style="transition-delay:.7s;">
+      Dan untuk itu — aku tidak punya kata-kata yang cukup.
+      Kamu sangat membingungkan. Kamu sangat luar biasa.
+      <em>Kamu masih di sini, padahal kamu tidak harus.</em>
+    </div>
+
+    <div class="sub-text reveal" style="transition-delay:.85s;margin-top:32px;">
+      Kamu juga sedang dalam proses pemulihan dari operasi tumor mamae —
+      bahkan dalam kondisi itu, kamu masih menyiapkan sebuah mini book untukku.
+      <br><br>
+      <em>Aku tidak tahu kata apa yang harus aku gunakan selain: terima kasih.</em>
+    </div>
+  </div>
+</section>
+
+<div class="sec-divider reveal"><div class="sd-line"></div><span class="sd-char">七</span><div class="sd-line r"></div></div>
+
+
+<!-- ========================================================
+     CHAPTER VII — GUBENG 18:50
+======================================================== -->
+<section class="chapter" id="ch7">
+  <div class="container">
+    <div class="ch-header">
+      <div class="ch-dot"></div>
+      <span class="ch-num">07</span>
+      <span class="ch-title">Gubeng, 18:50 &nbsp;·&nbsp; 今夜</span>
+      <div class="ch-line"></div>
+    </div>
+
+    <div class="story-text reveal">
+      Aku sudah beli tiketnya.<br>
+      Kereta lokal dari Pasuruan pukul <em>14:55</em>.<br>
+      Tiba di Gubeng sekitar <em>17:20</em>.<br>
+      Dan kamu — keretamu berangkat pukul <em>18:50</em>.
+    </div>
+
+    <div class="plan-timeline" style="margin-top:70px;">
+
+      <div class="plan-step">
+        <div class="ps-dot"></div>
+        <div class="ps-time">17:20 &nbsp;·&nbsp; Tiba di Stasiun Gubeng</div>
+        <div class="ps-title">Sampai di Surabaya</div>
+        <div class="ps-body">
+          Pertama kalinya datang ke Surabaya dengan satu tujuan yang jelas.
+          Bukan karena transit, bukan karena kebetulan.
+          <em>Karena kamu ada di sini.</em>
+        </div>
+      </div>
+
+      <div class="plan-step">
+        <div class="ps-dot"></div>
+        <div class="ps-time">~17:30 &nbsp;·&nbsp; Mal atau Indomaret dekat Stasiun</div>
+        <div class="ps-title">Mencari Gantungan Kunci &amp; Dairy Milk</div>
+        <div class="ps-body">
+          Gantungan kunci untuk aku taruh di tasku — supaya setiap kali aku lihat tasku, terasa seperti ada seseorang yang selalu di sisiku.
+          Dan Dairy Milk, karena itu adalah caraku yang pertama dan paling jujur untuk mengungkapkan sesuatu.
+          <em>Masih sama seperti dulu di Indomaret itu.</em>
+        </div>
+      </div>
+
+      <div class="plan-step">
+        <div class="ps-dot"></div>
+        <div class="ps-time">~18:30–18:50 &nbsp;·&nbsp; Stasiun Gubeng</div>
+        <div class="ps-title">Mencarimu di Stasiun</div>
+        <div class="ps-body">
+          Aku tidak tahu kamu biasanya datang berapa menit sebelum berangkat.
+          Tapi aku akan menunggu. Dan kalau kamu muncul,
+          aku ingin menyerahkan sesuatu — gantungan kunci itu, Dairy Milk itu, dan mungkin sepucuk tulisan.
+          <em>Aku takut. Tapi aku tetap akan datang.</em>
+        </div>
+      </div>
+
+      <div class="plan-step">
+        <div class="ps-dot"></div>
+        <div class="ps-time">18:50 &nbsp;·&nbsp; Keretamu Berangkat</div>
+        <div class="ps-title">Kamu Pergi ke Pasuruan</div>
+        <div class="ps-body">
+          Dan aku — mungkin akan kembali ke stasiun, menunggu Harina pukul 5:55 pagi dari Pasar Turi ke Bandung.
+          Sendirian di stasiun malam hari, seperti Takaki menunggu Akari yang tidak pernah datang.
+          <em>Tapi malam ini — setidaknya aku sudah mencoba datang.</em>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="station-countdown reveal" style="transition-delay:.5s;">
+      <div class="sc-label">KERETA KAMU BERANGKAT &nbsp;·&nbsp; 出発時刻</div>
+      <div class="sc-train">Stasiun Gubeng → Pasuruan</div>
+      <div class="sc-time">18:50</div>
+      <div class="sc-note">
+        Setiap detik yang mendekat ke jam itu terasa seperti jantungku berdenyut lebih kencang.<br>
+        Aku tidak tahu apakah kamu akan ada di sana. Aku tidak tahu apakah kamu akan mau.<br>
+        <em>Tapi setidaknya malam ini, aku tidak ingin menyesal karena tidak mencoba.</em>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sec-divider reveal"><div class="sd-line"></div><span class="sd-char">八</span><div class="sd-line r"></div></div>
+
+
+<!-- ========================================================
+     SURAT
+======================================================== -->
+<section id="surat" class="chapter">
+  <div class="container">
+    <div class="ch-header">
+      <div class="ch-dot"></div>
+      <span class="ch-num">08</span>
+      <span class="ch-title">Surat &nbsp;·&nbsp; 手紙</span>
+      <div class="ch-line"></div>
+    </div>
+
+    <div class="letter-wrap reveal">
+      <div class="letter-top">手紙 &nbsp;·&nbsp; Ditulis dengan Jujur &nbsp;·&nbsp; Pasuruan, 2026</div>
+
+      <div class="letter-salut">
+        Untuk Diva yang <em>membingungkan</em>,<br>
+        yang masih ada sampai sekarang<br>
+        padahal tidak harus.
+      </div>
+
+      <p class="letter-p">
+        Orang-orang pernah bilang aku <strong>membosankan dan jelek</strong>. Tapi kamu masih mau. Dan itu — entah kamu sadari atau tidak — adalah hal yang tidak bisa aku jelaskan dan tidak bisa aku abaikan.
+      </p>
+
+      <p class="letter-p">
+        Aku tidak pernah bisa memberikan apa yang kamu minta. Tidak pernah bertanya soal nyeri haidmu. Tidak pernah datang ke Surabaya. Tidak pernah mendefinisikan kita secara jelas. Tidak pernah cukup berani untuk bicara ke orang tuaku. Tidak pernah membuat itinerary seperti cowok teman-temanmu yang bela-belain nabung dari gaji bengkel.<br><br>
+        <em>Semua itu nyata. Dan aku tidak akan membantahnya.</em>
+      </p>
+
+      <p class="letter-p">
+        Tapi yang juga nyata adalah ini: setiap kali hp-ku bergetar dan nama kamu yang muncul — waktu minibook itu, waktu hujan deras dan kamu menghubungiku, waktu miscall tengah malam yang katamu "kepencet" — aku menyadari bahwa ternyata aku masih sangat, <em>sangat</em> mengharapkanmu.
+      </p>
+
+      <p class="letter-p">
+        Kamu sedang pulih dari operasi. Kamu butuh terapi. Kamu punya UTS. Kamu punya banyak hal yang jauh lebih penting dari aku. Dan meski begitu, kamu masih sempat membuat mini book untukku dini hari itu — dan mengatakan bahwa perasaanmu ke aku tidak bisa hilang begitu saja.<br><br>
+        <strong>Aku tidak mau lagi diam setelah mengetahui itu.</strong>
+      </p>
+
+      <p class="letter-p">
+        Jadi malam ini aku datang. Bukan dengan janji-janji. Bukan dengan kata-kata yang indah. Hanya dengan Dairy Milk yang aku pilih karena itu yang pertama kali aku beli untukmu, dan sebuah gantungan kunci yang ingin aku taruh di tasku — supaya setiap kali aku lihat tasku, aku ingat bahwa ada seseorang yang sedang aku usahakan.<br><br>
+        <em>Kamu.</em>
+      </p>
+
+      <p class="letter-p">
+        Kalau kamu tidak ada di stasiun malam itu, tidak apa-apa. Aku akan menunggu Harina pukul 5:55 pagi sendirian, dan aku akan mencoba lagi. Kalau kamu ada — maka terima kasih sudah muncul di stasiun itu, di duniaku, dan di 4 tahun ini.
+      </p>
+
+      <div class="letter-close">
+        <div class="lc-line"></div>
+        <div class="lc-name">— Nal</div>
+        <div class="lc-date">Pasuruan → Surabaya &nbsp;·&nbsp; Februari 2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sec-divider reveal"><div class="sd-line"></div><span class="sd-char">九</span><div class="sd-line r"></div></div>
+
+
+<!-- ========================================================
+     DO'A
+======================================================== -->
+<section id="doa">
+  <div class="container">
+    <p class="doa-label reveal">✦ &nbsp; tulis do'amu dan lepaskan ke angin &nbsp; ✦</p>
+    <div class="doa-form reveal" style="transition-delay:.2s;">
+      <input class="doa-input" id="doaInput" type="text" placeholder="tuliskan sesuatu yang kamu harapkan...">
+      <br>
+      <button class="doa-btn" id="doaBtn">散る &nbsp;·&nbsp; Lepaskan</button>
+    </div>
+    <div class="doa-output" id="doaOutput"></div>
+  </div>
+</section>
+
+<div class="sec-divider reveal"><div class="sd-line"></div><span class="sd-char">終</span><div class="sd-line r"></div></div>
+
+
+<!-- ========================================================
+     CLOSING
+======================================================== -->
+<section id="closing">
+  <div class="closing-bg"></div>
+  <div class="closing-inner reveal">
+    <span class="closing-kanji">また会えたら</span>
+    <p class="closing-main">
+      "Kalau kita bisa bertemu lagi —<br>
+      aku harap saat itu aku sudah menjadi orang<br>
+      yang layak untukmu."<br><br>
+      <em>— to be able to see you again · また会えたら</em>
+    </p>
+    <div class="closing-jp">秒速5センチメートル &nbsp;·&nbsp; ONE MORE TIME, ONE MORE CHANCE &nbsp;·&nbsp; 50.000分</div>
+  </div>
+</section>
+
+
+<!-- ========================================================
+     JAVASCRIPT
+======================================================== -->
+<script>
+/* ---- CURSOR ---- */
+const cur = document.getElementById('cur');
+const ring = document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e=>{
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+});
+(function animRing(){
+  rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+
+/* ---- STARS ---- */
+const starsEl=document.getElementById('stars');
+for(let i=0;i<180;i++){
+  const s=document.createElement('div');
+  s.className='star';
+  const sz=Math.random()*2.2+.4;
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--d:${2+Math.random()*5}s;--dl:${Math.random()*5}s;--mo:${.08+Math.random()*.25};`;
+  starsEl.appendChild(s);
+}
+
+/* ---- SAKURA CANVAS ---- */
+const cvs=document.getElementById('sakura-canvas');
+const ctx=cvs.getContext('2d');
+function resize(){cvs.width=window.innerWidth;cvs.height=window.innerHeight;}
+resize(); window.addEventListener('resize',resize);
+
+const petals=[];
+function mkPetal(){
+  return{
+    x:Math.random()*cvs.width,y:-20,
+    sz:5+Math.random()*9,speed:.4+Math.random()*1,
+    wx:-.6+Math.random()*.8,rot:Math.random()*Math.PI*2,
+    rs:.02*(Math.random()>.5?1:-1),
+    op:.2+Math.random()*.55,sw:Math.random()*Math.PI*2,sws:.01+Math.random()*.025
+  };
+}
+for(let i=0;i<35;i++){const p=mkPetal();p.y=Math.random()*cvs.height;petals.push(p);}
+function drawPetal(p){
+  ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+  ctx.globalAlpha=p.op;
+  ctx.beginPath();ctx.ellipse(0,0,p.sz*.45,p.sz,0,0,Math.PI*2);
+  const g=ctx.createRadialGradient(0,-p.sz*.3,0,0,0,p.sz);
+  g.addColorStop(0,'rgba(255,220,235,.9)');
+  g.addColorStop(.5,'rgba(232,160,184,.65)');
+  g.addColorStop(1,'rgba(200,100,140,.1)');
+  ctx.fillStyle=g;ctx.fill();ctx.restore();
+}
+(function animPetals(){
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  petals.forEach(p=>{
+    p.sw+=p.sws;p.x+=p.wx+Math.sin(p.sw)*.4;p.y+=p.speed;p.rot+=p.rs;
+    if(p.y>cvs.height+20||p.x<-50||p.x>cvs.width+50){
+      Object.assign(p,mkPetal());p.y=-20;
+    }
+    drawPetal(p);
+  });
+  requestAnimationFrame(animPetals);
+})();
+
+/* ---- SCROLL PROGRESS ---- */
+const prog=document.getElementById('progress');
+window.addEventListener('scroll',()=>{
+  const pct=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  prog.style.width=pct+'%';
+});
+
+/* ---- INTERSECTION OBSERVER ---- */
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('vis');
+      if(e.target.classList.contains('distance-big')){
+        e.target.classList.add('vis');
+      }
+    }
+  });
+},{threshold:.12});
+
+document.querySelectorAll(
+  '.reveal,.reveal-left,.reveal-right,.ch-header,.confession-item,.plan-step,.distance-big,.sec-divider'
+).forEach(el=>io.observe(el));
+
+/* ---- PARALLAX HERO ---- */
+const heroEl=document.getElementById('hero');
+window.addEventListener('scroll',()=>{
+  if(window.scrollY<window.innerHeight)
+    heroEl.style.transform=`translateY(${window.scrollY*.28}px)`;
+});
+
+/* ---- DO'A / WISH ---- */
+const doaInput=document.getElementById('doaInput');
+const doaBtn=document.getElementById('doaBtn');
+const doaOutput=document.getElementById('doaOutput');
+const doaList=[];
+
+doaBtn.addEventListener('click',()=>{
+  const v=doaInput.value.trim();
+  if(!v)return;
+  doaList.push(v); doaInput.value='';
+  render(); spawnSakura();
+});
+doaInput.addEventListener('keydown',e=>{if(e.key==='Enter')doaBtn.click();});
+
+function render(){
+  doaOutput.innerHTML='';
+  doaList.forEach((w,i)=>{
+    const s=document.createElement('span');
+    s.className='doa-petal';
+    s.style.setProperty('--dd',(i*0.5)+'s');
+    s.textContent='✦ '+w+' ✦';
+    doaOutput.appendChild(s);
+  });
+}
+
+function spawnSakura(){
+  for(let i=0;i<8;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`position:fixed;font-size:${14+Math.random()*14}px;pointer-events:none;z-index:10;
+      left:${15+Math.random()*70}vw;animation:spawnFall ${5+Math.random()*5}s linear forwards;
+      animation-delay:${Math.random()*2}s;`;
+    d.textContent='🌸';
+    document.body.appendChild(d);
+    d.addEventListener('animationend',()=>d.remove());
+  }
+}
+// Spawn fall keyframes injection
+const ks=document.createElement('style');
+ks.textContent=`@keyframes spawnFall{0%{top:-40px;opacity:0;transform:rotate(0deg);}10%{opacity:.8;}90%{opacity:.5;}100%{top:110vh;opacity:0;transform:rotate(540deg);}}`;
+document.head.appendChild(ks);
+</script>
+</body>
+</html>
