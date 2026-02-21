@@ -1236,6 +1236,118 @@ section{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction
   letter-spacing:.1em;
 }
 
+/* ================= [S10 BAD ENDING CHAPTER HEADER] ================= */
+#s10 .ending-chap{
+margin-top: 200px; /* Memberikan jarak atas yang sangat jauh (setara dengan jarak memories) */
+  padding: 0 0 60px 0; /* Mengatur jarak dengan tombol Epilog di bawahnya */
+}
+#s10 .ending-chap .chap-num{
+  font-family:'Noto Serif JP', serif;
+  font-weight:200;
+  font-size:10px;
+  letter-spacing:0.7em;
+  color:rgba(242,168,191,0.4);
+  margin-bottom:14px;
+}
+#s10 .ending-chap .chap-eyebrow{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+#s10 .ending-chap .chap-dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--sakura);
+  box-shadow:0 0 10px var(--sakura);
+  flex-shrink:0;
+}
+#s10 .ending-chap .chap-dot-label{
+  font-family:'Noto Serif JP', serif;
+  font-weight:200;
+  font-size:10px;
+  letter-spacing:0.5em;
+  color:rgba(242,168,191,0.55);
+}
+#s10 .ending-chap .chap-rail{
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg,rgba(200,169,110,0.2),transparent);
+}
+#s10 .ending-chap .chap-title{
+  font-family:'Playfair Display', serif;
+  font-weight:400;
+  font-size:clamp(30px,5vw,52px);
+  margin-top:20px;
+  line-height:1.15;
+}
+#s10 .ending-chap .chap-title em{font-style:italic;color:var(--sakura);}
+#s10 .epi-btn-wrap{margin-top:0;}
+
+/* ================= [V8 EPILOGUE BUTTON] ================= */
+.epi-btn-wrap{width:100%;margin-top:4rem;text-align:center;}
+.epi-btn-label{font-family:'Noto Serif JP',serif;font-size:9px;letter-spacing:.5em;color:rgba(138,128,122,.35);margin-bottom:1.5rem;display:block;}
+.epi-btn{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.6rem 2rem;border:1px solid rgba(255,100,100,.12);background:rgba(255,60,60,.02);text-decoration:none;transition:all .4s ease;position:relative;overflow:hidden;}
+.epi-btn::before{content:'';position:absolute;inset:0;background:rgba(255,80,80,.04);opacity:0;transition:opacity .4s;}
+.epi-btn:hover::before{opacity:1;}
+.epi-btn:hover{border-color:rgba(255,100,100,.25);}
+.epi-btn-jp{font-family:'Shippori Mincho',serif;font-size:clamp(22px,3vw,32px);color:rgba(255,200,212,.15);line-height:1;flex-shrink:0;}
+.epi-btn-text{font-family:'Cormorant Garamond',serif;font-size:clamp(13px,1.6vw,17px);font-style:italic;color:rgba(200,180,180,.6);flex:1;text-align:left;line-height:1.5;}
+.epi-btn-arrow{font-family:'Noto Serif JP',serif;font-size:14px;color:rgba(255,100,100,.3);flex-shrink:0;transition:transform .3s;}
+.epi-btn:hover .epi-btn-arrow{transform:translateX(4px);}
+.epi-btn-warning{font-family:'Noto Serif JP',serif;font-size:8px;letter-spacing:.35em;color:rgba(138,128,122,.25);margin-top:1rem;display:block;}
+
+/* ================= [EPILOGUE PLACEHOLDER PAGE] ================= */
+body.epilogue-page{
+  cursor:auto;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:48px 24px;
+}
+.epi-placeholder{
+  width:min(720px,92vw);
+  border:1px solid rgba(232,160,184,.18);
+  background:rgba(8,8,20,.7);
+  padding:42px 34px;
+  text-align:center;
+}
+.epi-placeholder-kana{
+  display:block;
+  margin-bottom:12px;
+  font-family:'Noto Serif JP',serif;
+  font-size:10px;
+  letter-spacing:.45em;
+  color:var(--sakura-dim);
+  opacity:.65;
+}
+.epi-placeholder-title{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(28px,5vw,52px);
+  font-weight:500;
+  color:var(--sakura-pale);
+  margin-bottom:14px;
+}
+.epi-placeholder-text{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(18px,2.6vw,28px);
+  font-style:italic;
+  color:var(--text);
+  line-height:1.7;
+}
+.epi-placeholder-link{
+  display:inline-block;
+  margin-top:24px;
+  font-family:'Noto Serif JP',serif;
+  font-size:10px;
+  letter-spacing:.3em;
+  color:var(--text-dim);
+  text-decoration:none;
+  transition:color .25s ease;
+}
+.epi-placeholder-link:hover{color:var(--sakura);}
+
 /* ================= [V3 PETAL OVERLAY] ================= */
 #petals{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:hidden;}
 .petal{

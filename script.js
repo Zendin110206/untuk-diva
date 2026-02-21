@@ -85,7 +85,7 @@ function syncBgmBySection(sectionId = bgmSectionState) {
   if (!bgm1 || !bgm2) return;
   bgmSectionState = sectionId;
 
-  if (sectionId === 'ch8' || sectionId === 'ch9' || sectionId === 'ch10') {
+  if (sectionId === 'ch8' || sectionId === 'ch9' || sectionId === 'ch10' || sectionId === 's10' || sectionId === 's11') {
     bgmLockedToSecond = true;
   }
 
@@ -283,18 +283,23 @@ if (daysEl && dcEl) {
 }
 
 // ================= [V4 CHAPTER NAV ACTIVE STATE] =================
-const navSectionIds = ['s0', 'ch1', 'ch2', 'ch3', 'ch4', 'ch5', 'ch6', 'ch7', 'ch8', 'ch9', 'ch10'];
+const navSectionIds = ['s0', 'ch1', 'ch2', 'ch3', 'ch4', 'ch5', 'ch6', 'ch7', 'ch8', 'ch9', 'ch10', 's10', 's11'];
 const cnDots = document.querySelectorAll('.cnav-dot');
+
+function getNavTargetTop(el) {
+  const rect = el.getBoundingClientRect();
+  return rect.top + window.scrollY;
+}
 
 function updateChapNav() {
   let cur = 's0';
   navSectionIds.forEach(id => {
     const el = document.getElementById(id);
-    if (el && window.scrollY + window.innerHeight / 2 >= el.offsetTop) cur = id;
+    if (el && window.scrollY + window.innerHeight / 2 >= getNavTargetTop(el)) cur = id;
   });
   cnDots.forEach(d => { d.classList.toggle('active', d.dataset.target === cur); });
   document.body.classList.toggle('ch5-rain', cur === 'ch4' || cur === 'ch5' || cur === 'ch6');
-  document.body.classList.toggle('ch8-petals', cur === 'ch8' || cur === 'ch9' || cur === 'ch10');
+  document.body.classList.toggle('ch8-petals', cur === 'ch8' || cur === 'ch9' || cur === 'ch10' || cur === 's10' || cur === 's11');
   syncBgmBySection(cur);
 }
 
